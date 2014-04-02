@@ -1,6 +1,7 @@
 #include "ExampleAIModule.h"
 #include <fstream>
 #include <math.h>
+#include <cstring>
 
 using namespace BWAPI;
 
@@ -95,7 +96,7 @@ void ExampleAIModule::onFrame()
 			//std::string type;
 		//std::hex id;
 		//unsigned int hp;
-			
+		
 		
 		int allyHealthIndex = 1;
 		int enemyHealthIndex = 4;
