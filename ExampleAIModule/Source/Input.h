@@ -21,8 +21,10 @@ private:
 	int _allyTotalHealth;
 	double _allyDPF;
 	double _outputArray[11];
+	std::vector<Unit*> _enemyUnits;
 	BWAPI::Position _allyCenter;
 	void Input::sortUnitsVec(std::vector<BWAPI::Unit*> &v);
 	bool distanceCompare(BWAPI::Unit* a, BWAPI::Unit* b);
+	Unit* getUnit(int index);
 };
 }

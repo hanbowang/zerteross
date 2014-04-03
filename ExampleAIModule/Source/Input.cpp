@@ -27,6 +27,7 @@ namespace BWAPI{
 	
 		for (int i = 0; i < 3; i++){
 			if (i < (int)enemyUnitsVec.size()){
+				_enemyUnits.push_back(enemyUnitsVec[i]);
 				_outputArray[ENEMY_DISTANCE+i] = enemyUnitsVec[i]->getDistance(_allyCenter);
 				BWAPI::WeaponType weapon = enemyUnitsVec[i]->getType().groundWeapon();
 				_outputArray[ENEMY_DPF+i] = weapon.damageAmount() / (double)weapon.damageCooldown();
@@ -56,5 +57,14 @@ namespace BWAPI{
 
 	double* Input::getInputArray(){
 		return _outputArray;
+	}
+
+	Unit* getEnemyUnit(int index){
+		if (index < (int)_enemyUnits.size()){
+			return _enemyUnits[index];
+		}
+		else{
+			return 0;
+		}
 	}
 }
