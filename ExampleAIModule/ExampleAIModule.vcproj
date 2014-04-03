@@ -212,10 +212,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\neatmain.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\network.cpp"
 				>
 			</File>
@@ -275,10 +271,6 @@
 			</File>
 			<File
 				RelativePath=".\Source\neat.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\neatmain.h"
 				>
 			</File>
 			<File

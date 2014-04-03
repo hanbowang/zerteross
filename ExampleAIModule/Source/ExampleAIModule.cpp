@@ -18,6 +18,7 @@ NEAT::Network *net;
 void ExampleAIModule::onStart()
 {
 	Broodwar->sendText("Hello CS5100");
+	cout<<"hello CS5100"<<endl;
 	//Broodwar->printf("The map is %s, a %d player map",Broodwar->mapName().c_str(),Broodwar->getStartLocations().size());
 	// Enable some cheat flags
 	//Broodwar->enableFlag(Flag::UserInput);
@@ -218,43 +219,43 @@ void ExampleAIModule::onFrame()
 		
 	}
 
-	if (analyzed && Broodwar->getFrameCount()%30==0)
-	{
-		//order one of our workers to guard our chokepoint.
-		for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++)
-		{
-			if ((*i)->getType().isWorker())
-			{
-				//get the chokepoints linked to our home region
-				std::set<BWTA::Chokepoint*> chokepoints= home->getChokepoints();
-				double min_length=10000;
-				BWTA::Chokepoint* choke=NULL;
+	//if (analyzed && Broodwar->getFrameCount()%30==0)
+	//{
+	//	//order one of our workers to guard our chokepoint.
+	//	for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++)
+	//	{
+	//		if ((*i)->getType().isWorker())
+	//		{
+	//			//get the chokepoints linked to our home region
+	//			std::set<BWTA::Chokepoint*> chokepoints= home->getChokepoints();
+	//			double min_length=10000;
+	//			BWTA::Chokepoint* choke=NULL;
 
-				//iterate through all chokepoints and look for the one with the smallest gap (least width)
-				for(std::set<BWTA::Chokepoint*>::iterator c=chokepoints.begin();c!=chokepoints.end();c++)
-				{
-					double length=(*c)->getWidth();
-					if (length<min_length || choke==NULL)
-					{
-						min_length=length;
-						choke=*c;
-					}
-				}
+	//			//iterate through all chokepoints and look for the one with the smallest gap (least width)
+	//			for(std::set<BWTA::Chokepoint*>::iterator c=chokepoints.begin();c!=chokepoints.end();c++)
+	//			{
+	//				double length=(*c)->getWidth();
+	//				if (length<min_length || choke==NULL)
+	//				{
+	//					min_length=length;
+	//					choke=*c;
+	//				}
+	//			}
 
-				//order the worker to move to the center of the gap
-				(*i)->rightClick(choke->getCenter());
-				break;
-			}
-		}
-	}
-	if (analyzed)
-		drawTerrainData();
+	//			//order the worker to move to the center of the gap
+	//			(*i)->rightClick(choke->getCenter());
+	//			break;
+	//		}
+	//	}
+	//}
+	//if (analyzed)
+	//	drawTerrainData();
 
-	if (analysis_just_finished)
-	{
-		Broodwar->printf("Finished analyzing map.");
-		analysis_just_finished=false;
-	}
+	//if (analysis_just_finished)
+	//{
+	//	Broodwar->printf("Finished analyzing map.");
+	//	analysis_just_finished=false;
+	//}
 }
 
 void ExampleAIModule::onSendText(std::string text)
@@ -317,26 +318,26 @@ void ExampleAIModule::onUnitEvade(BWAPI::Unit* unit)
 
 void ExampleAIModule::onUnitShow(BWAPI::Unit* unit)
 {
-	if (!Broodwar->isReplay() && Broodwar->getFrameCount()>1)
-		//Broodwar->sendText("A %s [%x] has been spotted at (%d,%d)",unit->getType().getName().c_str(),unit,unit->getPosition().x(),unit->getPosition().y());
-	if (unit->getPlayer()->isEnemy(Broodwar->self())){
-		BWAPI::Unit* nearestUnit;
-		int nearestDistance = 10000;
-		for(std::set<Unit*>::const_iterator i=Broodwar->enemy()->getUnits().begin();i!=Broodwar->enemy()->getUnits().end();i++){
-			int avgDistance = 0;
-			for(std::set<Unit*>::const_iterator j=Broodwar->self()->getUnits().begin();j!=Broodwar->self()->getUnits().end();j++){
-				avgDistance += (*i)->getDistance((*j));
-			}
-			avgDistance /= Broodwar->enemy()->getUnits().size();
-			if (avgDistance < nearestDistance){
-				nearestDistance = avgDistance;
-				nearestUnit = (*i);
-			}
-		}
-		for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
-			(*i)->attack(nearestUnit);
-		}
-	}
+	//if (!Broodwar->isReplay() && Broodwar->getFrameCount()>1)
+	//	//Broodwar->sendText("A %s [%x] has been spotted at (%d,%d)",unit->getType().getName().c_str(),unit,unit->getPosition().x(),unit->getPosition().y());
+	//if (unit->getPlayer()->isEnemy(Broodwar->self())){
+	//	BWAPI::Unit* nearestUnit;
+	//	int nearestDistance = 10000;
+	//	for(std::set<Unit*>::const_iterator i=Broodwar->enemy()->getUnits().begin();i!=Broodwar->enemy()->getUnits().end();i++){
+	//		int avgDistance = 0;
+	//		for(std::set<Unit*>::const_iterator j=Broodwar->self()->getUnits().begin();j!=Broodwar->self()->getUnits().end();j++){
+	//			avgDistance += (*i)->getDistance((*j));
+	//		}
+	//		avgDistance /= Broodwar->enemy()->getUnits().size();
+	//		if (avgDistance < nearestDistance){
+	//			nearestDistance = avgDistance;
+	//			nearestUnit = (*i);
+	//		}
+	//	}
+	//	for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
+	//		(*i)->attack(nearestUnit);
+	//	}
+	//}
 }
 
 void ExampleAIModule::onUnitHide(BWAPI::Unit* unit)
@@ -368,7 +369,7 @@ void ExampleAIModule::onUnitCreate(BWAPI::Unit* unit)
 
 void ExampleAIModule::onUnitDestroy(BWAPI::Unit* unit)
 {
-	if (!Broodwar->isReplay() && Broodwar->getFrameCount()>1)
+	/*if (!Broodwar->isReplay() && Broodwar->getFrameCount()>1)
 		Broodwar->sendText("A %s [%x] has been destroyed at (%d,%d)",unit->getType().getName().c_str(),unit,unit->getPosition().x(),unit->getPosition().y());
 	if (unit->getPlayer()->isEnemy(Broodwar->self())){
 		if (!unit->getPlayer()->getUnits().empty()){
@@ -392,7 +393,7 @@ void ExampleAIModule::onUnitDestroy(BWAPI::Unit* unit)
 			}
 
 		}
-	}
+	}*/
 }
 
 void ExampleAIModule::onUnitMorph(BWAPI::Unit* unit)
