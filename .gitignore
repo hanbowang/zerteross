@@ -21,3 +21,5 @@
 *.app
 
 *.user
+*.ncb
+*.suo
