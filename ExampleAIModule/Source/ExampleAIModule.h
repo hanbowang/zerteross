@@ -59,5 +59,4 @@ public:
   // add some global variables
   std::map<std::string, int> allyIndex;
   std::map<std::string, int> enemyIndex;
-  double inputs[25];
 };

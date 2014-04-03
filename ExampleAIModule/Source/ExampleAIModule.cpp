@@ -38,8 +38,8 @@ void ExampleAIModule::onStart()
 	char curword[20];
 	int id;
 	
-	NEAT::load_neat_params("multiunit.ne",true);
-	std::ifstream iFile("multiunitstartgenes", std::ios::in);
+	NEAT::load_neat_params("F:\\Games\\StarCraft00\\bwapi-data\\AI\\multiunit.ne",true);
+	std::ifstream iFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\multiunitstartgenes", std::ios::in);
 
 	//cout << "Start multiunit evolving" << endl;
 	Broodwar->sendText("Start multiunit evolving");
@@ -106,8 +106,7 @@ void ExampleAIModule::onFrame()
 
 	drawStats();
 	
-	if(Broodwar->getFrameCount() % 1 == 0 && Broodwar->getFrameCount() > 0){
-		double *inputArray;
+	double *inputArray;
 		if(Broodwar->getFrameCount() == 1){
 			Input *input = new Input(Broodwar->self()->getUnits(),Broodwar->enemy()->getUnits());
 			for (int i = 0; i<11; i++){
@@ -115,6 +114,9 @@ void ExampleAIModule::onFrame()
 			}
 			inputArray = input->getInputArray();
 		}
+
+	if(Broodwar->getFrameCount() % 10 == 0 && Broodwar->getFrameCount() > 0){
+		
 
 		// load network input
 		net->load_sensors(inputArray);
@@ -133,18 +135,31 @@ void ExampleAIModule::onFrame()
 			}
 		}
 
-
-
-		double outputArray[18];
+		double outputArray[3];
 		int j = 0;
+		double maxScore = -10000;
+		int targetIndex = 0;
 		for(std::vector<NNode*>::const_iterator i=net->outputs.begin();i != net->outputs.end();i++){
+			if(maxScore < (*i)->activation) {
+				maxScore = (*i)->activation;
+				targetIndex = j;
+			}
 			outputArray[j++] = (*i)->activation;
 		}
 
 		net->flush();
 
-		for(int i = 0; i < 18; i++) {
+		for(int i = 0; i < 3; i++) {
 			Broodwar->sendText("%d th output is: %f", i+1, outputArray[i]);
+		}
+		int k;
+		for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
+			k = 0;
+			for(std::set<Unit*>::const_iterator j=Broodwar->enemy()->getUnits().begin();j!=Broodwar->enemy()->getUnits().end();j++) {
+				if(targetIndex == k++) {
+					(*i)->attack(*j);
+				}
+			}
 		}
 
 
