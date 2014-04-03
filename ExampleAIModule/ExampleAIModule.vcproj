@@ -184,6 +184,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\experiments.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\gene.cpp"
 				>
 			</File>
@@ -196,11 +200,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Input.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\link.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\neat.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\neatmain.cpp"
 				>
 			</File>
 			<File
@@ -238,6 +250,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\experiments.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\gene.h"
 				>
 			</File>
@@ -250,11 +266,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Input.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\link.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\neat.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\neatmain.h"
 				>
 			</File>
 			<File

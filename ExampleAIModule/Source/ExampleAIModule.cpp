@@ -2,13 +2,18 @@
 #include <fstream>
 #include <math.h>
 #include <cstring>
+#include <stdlib.h>
+#include "Input.h"
 
 using namespace BWAPI;
+using namespace std;
+using namespace NEAT;
 
 bool analyzed;
 bool analysis_just_finished;
 BWTA::Region* home;
 BWTA::Region* enemy_base;
+NEAT::Network *net;
 
 void ExampleAIModule::onStart()
 {
@@ -27,8 +32,33 @@ void ExampleAIModule::onStart()
 	show_bullets=true;
 	show_visibility_data=false;
 
-	// initialize the inputs array
-	inputs = {0};
+	// Initialize the neural network
+	NEAT::Population *pop = 0;
+	NEAT::Genome *start_genome;
+	char curword[20];
+	int id;
+	
+	NEAT::load_neat_params("multiunit.ne",true);
+	std::ifstream iFile("multiunitstartgenes", std::ios::in);
+
+	//cout << "Start multiunit evolving" << endl;
+	Broodwar->sendText("Start multiunit evolving");
+
+	// Read in start Genome
+	iFile >> curword;
+	iFile >> id;
+	Broodwar->sendText("Reading in Genome id: %d", id);
+	start_genome = new Genome(id, iFile);
+	iFile.close();
+	
+	// Spawning Population
+	Broodwar->sendText("Spawning Population");
+	pop = new Population(start_genome, NEAT::pop_size);
+
+	pop->verify();
+	Organism* org = pop->organisms[0];
+	// get the nerual network
+	net = org->net;
 }
 
 void ExampleAIModule::onEnd(bool isWinner)
@@ -75,19 +105,50 @@ void ExampleAIModule::onFrame()
 		drawBullets();
 
 	drawStats();
-
+	
 	if(Broodwar->getFrameCount() % 1 == 0 && Broodwar->getFrameCount() > 0){
-
-		if(Broodwar->getFrameCount() == 1) {
-			int aIndex = 0;
-			int eIndex = 0;
-			for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
-				allyIndex[std::to_string((*i))] = aIndex++;
+		double *inputArray;
+		if(Broodwar->getFrameCount() == 1){
+			Input *input = new Input(Broodwar->self()->getUnits(),Broodwar->enemy()->getUnits());
+			for (int i = 0; i<11; i++){
+				Broodwar->printf("%f",input->getInputArray()[i]);
 			}
-			for(std::set<Unit*>::const_iterator i=Broodwar->enemy()->getUnits().begin();i!=Broodwar->enemy()->getUnits().end();i++){
-				enemyIndex[std::to_string((*i))] = eIndex++;
+			inputArray = input->getInputArray();
+		}
+
+		// load network input
+		net->load_sensors(inputArray);
+		int net_depth = net->max_depth();
+		int relax;
+		bool success = net->activate();
+		double this_out;
+		
+		if(success) {
+			Broodwar->sendText("network activated");
+		}
+		for(relax = 0; relax < net_depth; relax++) {
+			success=net->activate();
+			for(std::vector<NNode*>::const_iterator i=net->outputs.begin();i != net->outputs.end();i++){
+				this_out = (*i)->activation;
 			}
 		}
+
+
+
+		double outputArray[18];
+		int j = 0;
+		for(std::vector<NNode*>::const_iterator i=net->outputs.begin();i != net->outputs.end();i++){
+			outputArray[j++] = (*i)->activation;
+		}
+
+		net->flush();
+
+		for(int i = 0; i < 18; i++) {
+			Broodwar->sendText("%d th output is: %f", i+1, outputArray[i]);
+		}
+
+
+
 
 		/*std::ofstream logFile("C:\\log.txt", std::ofstream::app);
 		logFile << "====================" << std::endl;*/
@@ -96,76 +157,26 @@ void ExampleAIModule::onFrame()
 			//std::string type;
 		//std::hex id;
 		//unsigned int hp;
-		
-		
-		int allyHealthIndex = 1;
-		int enemyHealthIndex = 4;
-		int allyEnemyIndex = 7;
-		int attackIndex = 0;
-		int moveIndex = 3;
-		double dInput;
-		double angleInput;
-		double dOutput;
-		double angleOutput;
-		double currentScore;
-		double maxScore(-std::numeric_limits<double>::infinity());
-		BWAPI::Unit* target;
-		const int allyInputAtrNum = 6;
-		const int allyOutputAtrNum = 
-		for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
-			/* update the HP of live ally units, and the relative position between ally units and enemy units */
-
-			inputs[allyHealthIndex + allyIndex.find(std::to_string(*i))] = (*i)->getHitPoints();
-			//type = (*i)->getType().getName().c_str();
-			//id = (*i);
-			//hp = (*i)->getHitPoints();
-			//logFile << "Ally unit: " << type << " " << std::hex << (*i) << " has HP " << hp << std::endl;
-			Broodwar->sendText("Ally unit: %s [%x] has HP %d. ",(*i)->getType().getName().c_str(),(*i),(*i)->getHitPoints());
-			for(std::set<Unit*>::const_iterator j=Broodwar->enemy()->getUnits().begin();j!=Broodwar->enemy()->getUnits().end();j++) {
-					dInput = sqrt(((*i)->getPosition().x() - (*j)->getPosition().x()) ^ 2 + ((*i)->getPosition().y() - (*j)->getPosition().y()) ^ 2);
-					// need to be refine
-					angleInput = atan(((*i)->getPosition().y() - (*j)->getPosition().y()) + ((*i)->getPosition().x() - (*j)->getPosition().x()));
-					inputs[allyEnemyIndex + allyIndex.find(std::to_string(*i) * 3 + enemyIndex.find(std::to_string(*j)) * 2] = dInput;
-					inputs[allyEnemyIndex + allyIndex.find(std::to_string(*i) * 3 + enemyIndex.find(std::to_string(*j)) * 2 + 1] = angleInput;
-			}
-
-		}
-
-		for(std::set<Unit*>::const_iterator i=Broodwar->enemy()->getUnits().begin();i!=Broodwar->enemy()->getUnits().end();i++){
-			// how to garuantee the order?
-			//input[allyHealthIndex] = 
-			//type = (*i)->getType().getName().c_str();
-			//id = (*i);
-			//hp = (*i)->getHitPoints();
-			//logFile << "Enemy unit: " << type << " " << std::hex << (*i) << " has HP " << hp << std::endl;
-			Broodwar->sendText("Enemy unit: %s [%x] has HP %d. ",(*i)->getType().getName().c_str(),(*i),(*i)->getHitPoints());
-			inputs[enemyHealthIndex + enemyIndex.find(std::to_string(*i))] = (*i)->getHitPoints();
-		}
-
-		// generate outputs
-		net->load_sensors(inputs);
-		// outputs = (*(net->outputs.begin()))->activate();
-		outputs = net->activate();
 
 
 		// translate outputs to actions 
-		for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
-			for(std::set<Unit*>::const_iterator j=Broodwar->enemy()->getUnits().begin();j!=Broodwar->enemy()->getUnits().end();j++) {
-				currentScore = outputs[allyIndex.find(std::to_string(*i)) * 6 + enemyIndex.find(std::to_string(*j))]
-				if(currentScore > maxScore) {
-					maxScore = currentScore;
-					target = (*j);
-				}
-			}
-			if(outputs[allyIndex.find(std::to_string(*i)) * 6 + 3] > maxScore) {
-				angleOutput = outputs[allyIndex.find(std::to_string(*i)) * 6 + 5];
-					dOutput = outputs[allyIndex.find(std::to_string(*i)) * 6 + 4];
-					BWAPI::Position p(round(dOutput * cos(angleOutput)), round(dOutput * sin(angleOutput)))
-					(*i)->move(p);
-			} else {
-				(*i)->attack(target);
-			}
-		}
+		//for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
+		//	for(std::set<Unit*>::const_iterator j=Broodwar->enemy()->getUnits().begin();j!=Broodwar->enemy()->getUnits().end();j++) {
+		//		currentScore = outputs[allyIndex.find(std::to_string(*i)) * 6 + enemyIndex.find(std::to_string(*j))]
+		//		if(currentScore > maxScore) {
+		//			maxScore = currentScore;
+		//			target = (*j);
+		//		}
+		//	}
+		//	if(outputs[allyIndex.find(std::to_string(*i)) * 6 + 3] > maxScore) {
+		//		angleOutput = outputs[allyIndex.find(std::to_string(*i)) * 6 + 5];
+		//			dOutput = outputs[allyIndex.find(std::to_string(*i)) * 6 + 4];
+		//			BWAPI::Position p(round(dOutput * cos(angleOutput)), round(dOutput * sin(angleOutput)))
+		//			(*i)->move(p);
+		//	} else {
+		//		(*i)->attack(target);
+		//	}
+		//}
 
 
 

@@ -3,6 +3,23 @@
 
 #include <BWTA.h>
 #include <windows.h>
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <sstream>
+#include <list>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include "neat.h"
+#include "network.h"
+#include "population.h"
+#include "organism.h"
+#include "genome.h"
+#include "species.h"
+
+
 
 extern bool analyzed;
 extern bool analysis_just_finished;
