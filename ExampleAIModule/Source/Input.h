@@ -6,6 +6,7 @@ class Input
 {
 public:
 	Input(std::set<BWAPI::Unit*> allyUnits, std::set<BWAPI::Unit*> enemyUnits);
+	Unit* getEnemyUnit(int index);
 	enum InputType{
 		ALLY_HP,
 		ALLY_DPF,
@@ -25,6 +26,6 @@ private:
 	BWAPI::Position _allyCenter;
 	void Input::sortUnitsVec(std::vector<BWAPI::Unit*> &v);
 	bool distanceCompare(BWAPI::Unit* a, BWAPI::Unit* b);
-	Unit* getEnemyUnit(int index);
+	
 };
 }

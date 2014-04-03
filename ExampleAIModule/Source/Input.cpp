@@ -6,6 +6,7 @@ namespace BWAPI{
 	_allyTotalHealth(0),
 	_allyDPF(0)
 	{
+		
 		int centerX = 0;
 		int centerY = 0;
 		for (std::set<Unit*>::const_iterator i=allyUnits.begin();i!=allyUnits.end();i++){
@@ -15,8 +16,10 @@ namespace BWAPI{
 			centerX += (*i)->getPosition().x();
 			centerY += (*i)->getPosition().y();
 		}
+		if(!allyUnits.empty()) {
 		centerX /= allyUnits.size();
 		centerY /= allyUnits.size();
+		}
 		BWAPI::Position allyCenter(centerX, centerY);
 		_allyCenter = allyCenter;
 		std::vector<BWAPI::Unit*> enemyUnitsVec(enemyUnits.begin(), enemyUnits.end());
@@ -39,6 +42,7 @@ namespace BWAPI{
 				_outputArray[ENEMY_HP] = 0;
 			}
 		}
+
 	}
 
 	void Input::sortUnitsVec(std::vector<BWAPI::Unit*> &v){

@@ -38,7 +38,7 @@ void ExampleAIModule::onStart()
 	NEAT::Genome *start_genome;
 	char curword[20];
 	int id;
-	
+
 	NEAT::load_neat_params("F:\\Games\\StarCraft00\\bwapi-data\\AI\\multiunit.ne",true);
 	std::ifstream iFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\multiunitstartgenes", std::ios::in);
 
@@ -51,15 +51,29 @@ void ExampleAIModule::onStart()
 	Broodwar->sendText("Reading in Genome id: %d", id);
 	start_genome = new Genome(id, iFile);
 	iFile.close();
-	
+
 	// Spawning Population
 	Broodwar->sendText("Spawning Population");
-	pop = new Population(start_genome, NEAT::pop_size);
-
+	//pop = new Population(start_genome, NEAT::pop_size);
+	pop = new Population("e:\\test.txt");
 	pop->verify();
 	Organism* org = pop->organisms[0];
 	// get the nerual network
 	net = org->net;
+	
+	// store the population
+	//std::ofstream out ("e:\\test5.txt");
+	//std::filebuf fb;
+	//fb.open ("e:\\test.txt",std::ios::out);
+ // std::ostream os(&fb);
+  //os << "Test sentence\n";
+	/*f.open(fich,ios::in | ios::out);*/
+	
+	//fb.close();	
+	//f.open(fich,ios::in | ios::out);
+	//f.write(*pop,sizeof(Population));
+	//f.read(*pop,sizeof(Population));
+
 }
 
 void ExampleAIModule::onEnd(bool isWinner)
@@ -94,6 +108,11 @@ void ExampleAIModule::onEnd(bool isWinner)
 			logFile << "-------------" << std::endl;
 		}
 	}
+	pop->print_to_file_by_species("e:\\test1.txt");
+	std::ofstream logFile("e:\\evolveLog.txt", std::ofstream::app);
+	logFile << "====================" << std::endl;
+
+
 }
 
 void ExampleAIModule::onFrame()
@@ -106,26 +125,23 @@ void ExampleAIModule::onFrame()
 		drawBullets();
 
 	drawStats();
-	
+
 	double *inputArray;
-		if(Broodwar->getFrameCount() == 1){
-			Input *input = new Input(Broodwar->self()->getUnits(),Broodwar->enemy()->getUnits());
-			for (int i = 0; i<11; i++){
-				Broodwar->printf("%f",input->getInputArray()[i]);
-			}
-			inputArray = input->getInputArray();
-		}
 
 	if(Broodwar->getFrameCount() % 10 == 0 && Broodwar->getFrameCount() > 0){
-		
-
+		Input* input;
+		input = new Input(Broodwar->self()->getUnits(),Broodwar->enemy()->getUnits());
+		/*for (int i = 0; i<11; i++){
+		Broodwar->printf("%f",input->getInputArray()[i]);
+		}*/
+		inputArray = input->getInputArray();
 		// load network input
 		net->load_sensors(inputArray);
 		int net_depth = net->max_depth();
 		int relax;
 		bool success = net->activate();
 		double this_out;
-		
+
 		if(success) {
 			Broodwar->sendText("network activated");
 		}
@@ -134,43 +150,45 @@ void ExampleAIModule::onFrame()
 			for(std::vector<NNode*>::const_iterator i=net->outputs.begin();i != net->outputs.end();i++){
 				this_out = (*i)->activation;
 			}
-		}
 
-		double outputArray[3];
-		int j = 0;
-		double maxScore = -10000;
-		int targetIndex = 0;
-		for(std::vector<NNode*>::const_iterator i=net->outputs.begin();i != net->outputs.end();i++){
-			if(maxScore < (*i)->activation) {
-				maxScore = (*i)->activation;
-				targetIndex = j;
-			}
-			outputArray[j++] = (*i)->activation;
-		}
 
-		net->flush();
-
-		for(int i = 0; i < 3; i++) {
-			Broodwar->sendText("%d th output is: %f", i+1, outputArray[i]);
-		}
-		int k;
-		for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
-			k = 0;
-			for(std::set<Unit*>::const_iterator j=Broodwar->enemy()->getUnits().begin();j!=Broodwar->enemy()->getUnits().end();j++) {
-				if(targetIndex == k++) {
-					(*i)->attack(*j);
+			double outputArray[3];
+			int j = 0;
+			double maxScore = -10000;
+			int targetIndex = 0;
+			for(std::vector<NNode*>::const_iterator i=net->outputs.begin();i != net->outputs.end();i++){
+				if(maxScore < (*i)->activation) {
+					maxScore = (*i)->activation;
+					targetIndex = j;
 				}
+				outputArray[j++] = (*i)->activation;
 			}
+
+			net->flush();
+			Broodwar->sendText("The target is: %d", targetIndex);
+			for(int i = 0; i < 3; i++) {
+				Broodwar->sendText("%d th output is: %f", i+1, outputArray[i]);
+			}
+			
+				for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
+					/*for(std::set<Unit*>::const_iterator j=Broodwar->enemy()->getUnits().begin();j!=Broodwar->enemy()->getUnits().end();j++) {
+					if(targetIndex == k++) {
+					(*i)->attack(*j);
+					}
+					}*/
+					if(input->getEnemyUnit(targetIndex)) {
+						(*i)->attack(input->getEnemyUnit(targetIndex));
+						Broodwar->sendText("the type is: %d", input->getEnemyUnit(targetIndex)->getID());
+					}
+				}
 		}
-
-
 
 
 		/*std::ofstream logFile("C:\\log.txt", std::ofstream::app);
 		logFile << "====================" << std::endl;*/
 		int leftmost = 10000;
 		//BWAPI::Unit* leftmostUnit;
-			//std::string type;
+		//std::string type;
 		//std::hex id;
 		//unsigned int hp;
 
@@ -198,25 +216,25 @@ void ExampleAIModule::onFrame()
 
 		/*for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
 
-			if ((*i)->getOrder() != Orders::AttackUnit){
-				if ((*i)->getPosition().x()-leftmostUnit->getPosition().x() > 30){
-					if ((*i)->getOrder() != Orders::AttackUnit){
-						(*i)->stop();
-					}
+		if ((*i)->getOrder() != Orders::AttackUnit){
+		if ((*i)->getPosition().x()-leftmostUnit->getPosition().x() > 30){
+		if ((*i)->getOrder() != Orders::AttackUnit){
+		(*i)->stop();
+		}
 
-				}
-				else{
-					BWAPI::Position p((*i)->getPosition().x()+500,(*i)->getPosition().y());
-					if ((*i)->getOrder() != Orders::AttackUnit){
-						(*i)->move(p);
-					}
-				}
-			}
+		}
+		else{
+		BWAPI::Position p((*i)->getPosition().x()+500,(*i)->getPosition().y());
+		if ((*i)->getOrder() != Orders::AttackUnit){
+		(*i)->move(p);
+		}
+		}
+		}
 		}*/
 		//logFile << "=============================" << std::endl;
 		Broodwar->sendText("=============================");
 		/*logFile.flush();*/
-		
+
 	}
 
 	//if (analyzed && Broodwar->getFrameCount()%30==0)
@@ -370,29 +388,29 @@ void ExampleAIModule::onUnitCreate(BWAPI::Unit* unit)
 void ExampleAIModule::onUnitDestroy(BWAPI::Unit* unit)
 {
 	/*if (!Broodwar->isReplay() && Broodwar->getFrameCount()>1)
-		Broodwar->sendText("A %s [%x] has been destroyed at (%d,%d)",unit->getType().getName().c_str(),unit,unit->getPosition().x(),unit->getPosition().y());
+	Broodwar->sendText("A %s [%x] has been destroyed at (%d,%d)",unit->getType().getName().c_str(),unit,unit->getPosition().x(),unit->getPosition().y());
 	if (unit->getPlayer()->isEnemy(Broodwar->self())){
-		if (!unit->getPlayer()->getUnits().empty()){
-			BWAPI::Unit* nearestUnit;
-			int nearestDistance = 10000;
-			for(std::set<Unit*>::const_iterator i=Broodwar->enemy()->getUnits().begin();i!=Broodwar->enemy()->getUnits().end();i++){
-				int avgDistance = 0;
-				for(std::set<Unit*>::const_iterator j=Broodwar->self()->getUnits().begin();j!=Broodwar->self()->getUnits().end();j++){
-					avgDistance += (*i)->getDistance((*j));
-				}
-				avgDistance /= Broodwar->enemy()->getUnits().size();
-				if (avgDistance < nearestDistance){
-					nearestDistance = avgDistance;
-					nearestUnit = (*i);
-				}
-			}
-			for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
-				if(nearestUnit){	
-					(*i)->attack(nearestUnit);
-				}
-			}
+	if (!unit->getPlayer()->getUnits().empty()){
+	BWAPI::Unit* nearestUnit;
+	int nearestDistance = 10000;
+	for(std::set<Unit*>::const_iterator i=Broodwar->enemy()->getUnits().begin();i!=Broodwar->enemy()->getUnits().end();i++){
+	int avgDistance = 0;
+	for(std::set<Unit*>::const_iterator j=Broodwar->self()->getUnits().begin();j!=Broodwar->self()->getUnits().end();j++){
+	avgDistance += (*i)->getDistance((*j));
+	}
+	avgDistance /= Broodwar->enemy()->getUnits().size();
+	if (avgDistance < nearestDistance){
+	nearestDistance = avgDistance;
+	nearestUnit = (*i);
+	}
+	}
+	for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
+	if(nearestUnit){	
+	(*i)->attack(nearestUnit);
+	}
+	}
 
-		}
+	}
 	}*/
 }
 

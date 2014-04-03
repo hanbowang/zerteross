@@ -176,15 +176,15 @@ Population::Population(const char *filename) {
 				}
 			}
 			//Ignore comments - they get printed to screen
-			//else if (strcmp(curword,"/*")==0) {
-			//	iFile>>curword;
-			//	while (strcmp(curword,"*/")!=0) {
-			//cout<<curword<<" ";
-			//		iFile>>curword;
-			//	}
-			//	cout<<endl;
+			else if (strcmp(curword,"/*")==0) {
+				iFile>>curword;
+				while (strcmp(curword,"*/")!=0) {
+					std::cout<<curword<<" ";
+					iFile>>curword;
+				}
+				std::cout<<std::endl;
 
-			//}
+			}
 			//Ignore comments surrounded by - they get printed to screen
 		}
 
