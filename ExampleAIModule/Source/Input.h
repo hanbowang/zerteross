@@ -25,10 +25,6 @@ private:
 	BWAPI::Position _allyCenter;
 	void Input::sortUnitsVec(std::vector<BWAPI::Unit*> &v);
 	bool distanceCompare(BWAPI::Unit* a, BWAPI::Unit* b);
-<<<<<<< HEAD
-	Unit* getUnit(int index);
-=======
 	Unit* getEnemyUnit(int index);
->>>>>>> modified input class
 };
 }

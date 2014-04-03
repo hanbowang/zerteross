@@ -59,11 +59,7 @@ namespace BWAPI{
 		return _outputArray;
 	}
 
-<<<<<<< HEAD
-	Unit* getEnemyUnit(int index){
-=======
 	Unit* Input::getEnemyUnit(int index){
->>>>>>> modified input class
 		if (index < (int)_enemyUnits.size()){
 			return _enemyUnits[index];
 		}
