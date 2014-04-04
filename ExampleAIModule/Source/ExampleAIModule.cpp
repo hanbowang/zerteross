@@ -39,9 +39,9 @@ void ExampleAIModule::onStart()
 
 	// Initialize the neural network
 	NEAT::Population *pop = 0;
-	BWAPI::Logfile* log = new BWAPI::Logfile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\logfile.txt");
-	pop = new Population("F:\\Games\\StarCraft00\\bwapi-data\\AI\\population.txt");
-	std::ifstream iFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\population.txt");
+	BWAPI::Logfile* log = new BWAPI::Logfile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\logfile.txt");
+	pop = new Population("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\population.txt");
+	std::ifstream iFile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\population.txt");
 	char curword[20];
 	int popgen;
 	int organisms;
@@ -76,34 +76,43 @@ void ExampleAIModule::onStart()
 		log->orgs = organisms;
 		log->curround = 0;
 		log->update();
-	}
+	} 
 
-			//NEAT::load_neat_params("F:\\Games\\StarCraft00\\bwapi-data\\AI\\multiunit.ne",true);
-			//std::ifstream iFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\multiunitstartgenes", std::ios::in);
+			/* NEAT::load_neat_params("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\multiunit.ne",true);
+			std::ifstream iFile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\multiunitstartgenes", std::ios::in);
+			char curword[20];
+			int id;
+			Genome *start_genome;
+			//cout << "Start multiunit evolving" << endl;
+			Broodwar->sendText("Start multiunit evolving");
 
-			////cout << "Start multiunit evolving" << endl;
-			//Broodwar->sendText("Start multiunit evolving");
+			// Read in start Genome
+			iFile >> curword;
+			iFile >> id;
+			Broodwar->sendText("Reading in Genome id: %d", id);
+			start_genome = new Genome(id, iFile);
+			iFile.close();
 
-			//// Read in start Genome
-			//iFile >> curword;
-			//iFile >> id;
-			//Broodwar->sendText("Reading in Genome id: %d", id);
-			//start_genome = new Genome(id, iFile);
-			//iFile.close();
-
-			//// Spawning Population
-			//Broodwar->sendText("Spawning Population");
-			//pop = new Population(start_genome, NEAT::pop_size);
-			//pop->print_to_file_by_species("F:\\Games\\StarCraft00\\bwapi-data\\AI\\population.txt");
+			// Spawning Population
+			Broodwar->sendText("Spawning Population");
+			pop = new Population(start_genome, NEAT::pop_size);
+			pop->print_to_file_by_species("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\population.txt");*/
 		
 
 
 
 	// verify the population
 	pop->verify();
-	Organism* org = pop->organisms[log->curorg];
+	if(log->curorg < log->orgs){
+		Organism* org = pop->organisms[log->curorg];
+		net = org->net;
+	} else {
+		Organism* org = pop->organisms[pop->organisms.size() - 1];
+		net = org->net;
+	}
+	//Organism* org = pop->organisms[0];
 	// get the nerual network
-	net = org->net;
+	
 
 	// store the population
 	//std::ofstream out ("e:\\test5.txt");
@@ -123,52 +132,52 @@ void ExampleAIModule::onEnd(bool isWinner)
 {
 	int allyHP = 0;
 	int enemyHP = 0;
-	std::ofstream logFile("C:\\log.txt", std::ofstream::app);
-	logFile << "====================" << std::endl;
+	//std::ofstream logFile("C:\\log.txt", std::ofstream::app);
+	//logFile << "====================" << std::endl;
 	if(isWinner){
-		logFile << "WIN ^.^" << std::endl;
-		logFile << "====" << std::endl;
-		logFile << "Remaining Units:" << std::endl;
-		logFile << "-------------" << std::endl;
+		//logFile << "WIN ^.^" << std::endl;
+		//logFile << "====" << std::endl;
+		//logFile << "Remaining Units:" << std::endl;
+		//logFile << "-------------" << std::endl;
 		for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
 			unsigned int hp = (*i)->getHitPoints();
 			unsigned int maxHp = (*i)->getType().maxHitPoints();
 			unsigned int percentage = hp * 100 / maxHp;
-			std::string name = (*i)->getType().getName();
-			logFile << name << "-" << percentage << "%" << std::endl;
-			logFile << "-------------" << std::endl;
+			//std::string name = (*i)->getType().getName();
+			/*logFile << name << "-" << percentage << "%" << std::endl;
+			logFile << "-------------" << std::endl;*/
 			allyHP += hp;
 		}
 	}
 	else{
-		logFile << "LOSE T.T" << std::endl;
+		/*logFile << "LOSE T.T" << std::endl;
 		logFile << "====" << std::endl;
 		logFile << "Remaining Units:" << std::endl;
-		logFile << "-------------" << std::endl;
+		logFile << "-------------" << std::endl;*/
 		for(std::set<Unit*>::const_iterator i=Broodwar->enemy()->getUnits().begin();i!=Broodwar->enemy()->getUnits().end();i++){
 			unsigned int hp = (*i)->getHitPoints();
 			unsigned int maxHp = (*i)->getType().maxHitPoints();
 			unsigned int percentage = hp * 100 / maxHp;
-			std::string name = (*i)->getType().getName();
+			/*std::string name = (*i)->getType().getName();
 			logFile << name << "-" << percentage << "%" << std::endl;
-			logFile << "-------------" << std::endl;
+			logFile << "-------------" << std::endl;*/
 			enemyHP += hp;
 		}
 	}
 
 
-	BWAPI::Logfile* log = new BWAPI::Logfile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\logfile.txt");
+	BWAPI::Logfile* log = new BWAPI::Logfile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\logfile.txt");
 	if(log->curorg < log->orgs){
 		if(log->curorg == 0 && log->curround == 0){
-			std::ofstream oFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\fitness.txt");
-			oFile << log->curgen << " " << log->curorg << " " << log->curfitness << " " << allyHP << " " << enemyHP << " " << log->allyMaxHP << std::endl;
+			std::ofstream oFile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\fitness.txt");
+			oFile << log->curgen << " " << log->curorg << " " << log->curround << " " << allyHP << " " << enemyHP << " " << log->allyMaxHP << std::endl;
 			oFile.close();
 		} else {
-			std::ofstream oFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\fitness.txt", std::ofstream::app);
-			oFile << log->curgen << " " << log->curorg << " " << log->curfitness << " " << allyHP << " " << enemyHP << " " << log->allyMaxHP << std::endl;
+			std::ofstream oFile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\fitness.txt", std::ofstream::app);
+			oFile << log->curgen << " " << log->curorg << " " << log->curround << " " << allyHP << " " << enemyHP << " " << log->allyMaxHP << std::endl;
 			oFile.close();
 		}
-		if(log->curround == 4){
+		if(log->curround == log->rounds - 1){
 			log->curorg += 1;
 			log->curround = 0;
 		}  else {
