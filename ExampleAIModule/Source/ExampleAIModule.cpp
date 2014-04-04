@@ -35,31 +35,48 @@ void ExampleAIModule::onStart()
 
 	// Initialize the neural network
 	NEAT::Population *pop = 0;
-	NEAT::Genome *start_genome;
-	char curword[20];
-	int id;
+	BWAPI::Logfile* log = new BWAPI::Logfile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\logfile.txt");
+	if(log->valid){
+		if(log->curgen == 0 && log->curorg == 0 && log->curround == 0){
+			NEAT::Genome *start_genome;
+			char curword[20];
+			int id;
+			int allyMHP = 0;
 
-	NEAT::load_neat_params("F:\\Games\\StarCraft00\\bwapi-data\\AI\\multiunit.ne",true);
-	std::ifstream iFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\multiunitstartgenes", std::ios::in);
+			// store the max hitpoint of all ally units
+			for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
+				unsigned int maxHp = (*i)->getType().maxHitPoints();
+				allyMHP += maxHp;
+			}
 
-	//cout << "Start multiunit evolving" << endl;
-	Broodwar->sendText("Start multiunit evolving");
+			log->allyMaxHP = allyMHP;
+			log->update();
 
-	// Read in start Genome
-	iFile >> curword;
-	iFile >> id;
-	Broodwar->sendText("Reading in Genome id: %d", id);
-	start_genome = new Genome(id, iFile);
-	iFile.close();
+			NEAT::load_neat_params("F:\\Games\\StarCraft00\\bwapi-data\\AI\\multiunit.ne",true);
+			std::ifstream iFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\multiunitstartgenes", std::ios::in);
 
-	// Spawning Population
-	Broodwar->sendText("Spawning Population");
-	//pop = new Population(start_genome, NEAT::pop_size);
-	pop = new Population("e:\\test.txt");
-	pop->verify();
-	Organism* org = pop->organisms[0];
-	// get the nerual network
-	net = org->net;
+			//cout << "Start multiunit evolving" << endl;
+			Broodwar->sendText("Start multiunit evolving");
+
+			// Read in start Genome
+			iFile >> curword;
+			iFile >> id;
+			Broodwar->sendText("Reading in Genome id: %d", id);
+			start_genome = new Genome(id, iFile);
+			iFile.close();
+
+			// Spawning Population
+			Broodwar->sendText("Spawning Population");
+			pop = new Population(start_genome, NEAT::pop_size);
+		} else {
+			pop = new Population("e:\\test.txt");
+		}
+		// verify the population
+		pop->verify();
+		Organism* org = pop->organisms[log->curorg];
+		// get the nerual network
+		net = org->net;
+	}
 	
 	// store the population
 	//std::ofstream out ("e:\\test5.txt");
@@ -78,6 +95,8 @@ void ExampleAIModule::onStart()
 
 void ExampleAIModule::onEnd(bool isWinner)
 {
+	int allyHP = 0;
+	int enemyHP = 0;
 	std::ofstream logFile("C:\\log.txt", std::ofstream::app);
 	logFile << "====================" << std::endl;
 	if(isWinner){
@@ -92,6 +111,7 @@ void ExampleAIModule::onEnd(bool isWinner)
 			std::string name = (*i)->getType().getName();
 			logFile << name << "-" << percentage << "%" << std::endl;
 			logFile << "-------------" << std::endl;
+			allyHP += hp;
 		}
 	}
 	else{
@@ -106,13 +126,42 @@ void ExampleAIModule::onEnd(bool isWinner)
 			std::string name = (*i)->getType().getName();
 			logFile << name << "-" << percentage << "%" << std::endl;
 			logFile << "-------------" << std::endl;
+			enemyHP += hp;
 		}
 	}
+
+	
+	BWAPI::Logfile* log = new BWAPI::Logfile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\logfile.txt");
+	NEAT::Population* pop = new Population("e:\\test.txt");
+	NEAT::Organism* org = = pop->organisms[log->curorg];
+	// calculate the fitness for current organism
+	double fitness = (allyHP - enemyHP) * abs(allyHP - enemyHP) / (log->allyMaxHP * log->allyMaxHP) + 1;
+	log->curfitness = (log->curfitness * log->curround + fitness) / (curround + 1);
+	org->fitness = log->curfitness;
+	org->error = 2 - log->curfitness;
+	// update the population file and log file
+	if(log->curround < log->rounds - 1){
+		log->curround += 1;
+	} else {
+		if(log->curorg < log->orgs - 1){
+			log->curround = 0;
+			log->curorg += 1;
+		} else {
+			if(log->curgen < log->gens - 1){
+				log->curgen += 1;
+				log->curround = 0;
+				log->curorg = 0;
+				pop->epoch(curgen);
+				log->orgs = pop->organisms.size();	// update the number of organisms
+			} else {
+				// reach the max generations
+				Broodwar->sendText("Reach the max generations!");
+			}
+		}
+	}
+	
 	pop->print_to_file_by_species("e:\\test1.txt");
-	std::ofstream logFile("e:\\evolveLog.txt", std::ofstream::app);
-	logFile << "====================" << std::endl;
-
-
+	log->update();
 }
 
 void ExampleAIModule::onFrame()
