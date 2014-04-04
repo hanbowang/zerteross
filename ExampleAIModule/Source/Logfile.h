@@ -1,4 +1,5 @@
 #include <iostream>
+#include <BWAPI.h>
 
 namespace BWAPI {
     

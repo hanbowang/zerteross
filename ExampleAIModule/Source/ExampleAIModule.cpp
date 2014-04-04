@@ -4,6 +4,7 @@
 #include <cstring>
 #include <stdlib.h>
 #include "Input.h"
+#include "Logfile.h"
 
 using namespace BWAPI;
 using namespace std;
@@ -24,6 +25,9 @@ void ExampleAIModule::onStart()
 	//Broodwar->enableFlag(Flag::UserInput);
 	// Uncomment to enable complete map information
 	Broodwar->enableFlag(Flag::CompleteMapInformation);
+	Broodwar->setLocalSpeed(0);
+	//Broodwar->setFrameSkip(5);
+	//Game::setGUI(false);
 
 	//read map information into BWTA so terrain analysis can be done in another thread
 	BWTA::readMap();
@@ -36,61 +40,83 @@ void ExampleAIModule::onStart()
 	// Initialize the neural network
 	NEAT::Population *pop = 0;
 	BWAPI::Logfile* log = new BWAPI::Logfile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\logfile.txt");
-	if(log->valid){
-		if(log->curgen == 0 && log->curorg == 0 && log->curround == 0){
-			NEAT::Genome *start_genome;
-			char curword[20];
-			int id;
-			int allyMHP = 0;
-
-			// store the max hitpoint of all ally units
-			for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
-				unsigned int maxHp = (*i)->getType().maxHitPoints();
-				allyMHP += maxHp;
-			}
-
-			log->allyMaxHP = allyMHP;
-			log->update();
-
-			NEAT::load_neat_params("F:\\Games\\StarCraft00\\bwapi-data\\AI\\multiunit.ne",true);
-			std::ifstream iFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\multiunitstartgenes", std::ios::in);
-
-			//cout << "Start multiunit evolving" << endl;
-			Broodwar->sendText("Start multiunit evolving");
-
-			// Read in start Genome
-			iFile >> curword;
-			iFile >> id;
-			Broodwar->sendText("Reading in Genome id: %d", id);
-			start_genome = new Genome(id, iFile);
-			iFile.close();
-
-			// Spawning Population
-			Broodwar->sendText("Spawning Population");
-			pop = new Population(start_genome, NEAT::pop_size);
-		} else {
-			pop = new Population("e:\\test.txt");
-		}
-		// verify the population
-		pop->verify();
-		Organism* org = pop->organisms[log->curorg];
-		// get the nerual network
-		net = org->net;
+	pop = new Population("F:\\Games\\StarCraft00\\bwapi-data\\AI\\population.txt");
+	std::ifstream iFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\population.txt");
+	char curword[20];
+	int popgen;
+	int organisms;
+	iFile >> curword;
+	if (strcmp(curword,"/*")==0) {
+		iFile >> popgen >> organisms;
 	}
-	
+	iFile.close();
+
+	if(log->curgen == 1 && log->curorg == 0 && log->curround == 0){
+		//NEAT::Genome *start_genome;
+		//char curword[20];
+		//int id;
+		int allyMHP = 0;
+
+		// store the max hitpoint of all ally units
+		for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
+			unsigned int maxHp = (*i)->getType().maxHitPoints();
+			allyMHP += maxHp;
+		}
+
+		log->allyMaxHP = allyMHP;
+		log->curgen = popgen;
+		log->curorg = 0;
+		log->orgs = organisms;
+		log->curround = 0;
+		log->update();
+	}
+	if(popgen == log->curgen + 1) {
+		log->curgen = popgen;
+		log->curorg = 0;
+		log->orgs = organisms;
+		log->curround = 0;
+		log->update();
+	}
+
+			//NEAT::load_neat_params("F:\\Games\\StarCraft00\\bwapi-data\\AI\\multiunit.ne",true);
+			//std::ifstream iFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\multiunitstartgenes", std::ios::in);
+
+			////cout << "Start multiunit evolving" << endl;
+			//Broodwar->sendText("Start multiunit evolving");
+
+			//// Read in start Genome
+			//iFile >> curword;
+			//iFile >> id;
+			//Broodwar->sendText("Reading in Genome id: %d", id);
+			//start_genome = new Genome(id, iFile);
+			//iFile.close();
+
+			//// Spawning Population
+			//Broodwar->sendText("Spawning Population");
+			//pop = new Population(start_genome, NEAT::pop_size);
+			//pop->print_to_file_by_species("F:\\Games\\StarCraft00\\bwapi-data\\AI\\population.txt");
+		
+
+
+
+	// verify the population
+	pop->verify();
+	Organism* org = pop->organisms[log->curorg];
+	// get the nerual network
+	net = org->net;
+
 	// store the population
 	//std::ofstream out ("e:\\test5.txt");
 	//std::filebuf fb;
 	//fb.open ("e:\\test.txt",std::ios::out);
- // std::ostream os(&fb);
-  //os << "Test sentence\n";
+	// std::ostream os(&fb);
+	//os << "Test sentence\n";
 	/*f.open(fich,ios::in | ios::out);*/
-	
+
 	//fb.close();	
 	//f.open(fich,ios::in | ios::out);
 	//f.write(*pop,sizeof(Population));
 	//f.read(*pop,sizeof(Population));
-
 }
 
 void ExampleAIModule::onEnd(bool isWinner)
@@ -130,38 +156,68 @@ void ExampleAIModule::onEnd(bool isWinner)
 		}
 	}
 
-	
+
 	BWAPI::Logfile* log = new BWAPI::Logfile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\logfile.txt");
-	NEAT::Population* pop = new Population("e:\\test.txt");
-	NEAT::Organism* org = = pop->organisms[log->curorg];
-	// calculate the fitness for current organism
-	double fitness = (allyHP - enemyHP) * abs(allyHP - enemyHP) / (log->allyMaxHP * log->allyMaxHP) + 1;
-	log->curfitness = (log->curfitness * log->curround + fitness) / (curround + 1);
-	org->fitness = log->curfitness;
-	org->error = 2 - log->curfitness;
-	// update the population file and log file
-	if(log->curround < log->rounds - 1){
-		log->curround += 1;
-	} else {
-		if(log->curorg < log->orgs - 1){
-			log->curround = 0;
-			log->curorg += 1;
+	if(log->curorg < log->orgs){
+		if(log->curorg == 0 && log->curround == 0){
+			std::ofstream oFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\fitness.txt");
+			oFile << log->curgen << " " << log->curorg << " " << log->curfitness << " " << allyHP << " " << enemyHP << " " << log->allyMaxHP << std::endl;
+			oFile.close();
 		} else {
-			if(log->curgen < log->gens - 1){
-				log->curgen += 1;
-				log->curround = 0;
-				log->curorg = 0;
-				pop->epoch(curgen);
-				log->orgs = pop->organisms.size();	// update the number of organisms
-			} else {
-				// reach the max generations
-				Broodwar->sendText("Reach the max generations!");
-			}
+			std::ofstream oFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\fitness.txt", std::ofstream::app);
+			oFile << log->curgen << " " << log->curorg << " " << log->curfitness << " " << allyHP << " " << enemyHP << " " << log->allyMaxHP << std::endl;
+			oFile.close();
 		}
+		if(log->curround == 4){
+			log->curorg += 1;
+			log->curround = 0;
+		}  else {
+			log->curround += 1;
+		}
+		log->update();
 	}
-	
-	pop->print_to_file_by_species("e:\\test1.txt");
-	log->update();
+	//NEAT::Population* pop = new Population("F:\\Games\\StarCraft00\\bwapi-data\\AI\\population.txt");
+	//NEAT::Organism* org = pop->organisms[log->curorg];
+	//// calculate the fitness for current organism
+	//double fitness = (double)(allyHP - enemyHP) * abs(allyHP - enemyHP) / (double)(log->allyMaxHP * log->allyMaxHP) + 1;
+	//log->curfitness = (log->curfitness * log->curround + fitness) / (log->curround + 1);
+	//org->fitness = log->curfitness;
+
+	//org->error = 2 - log->curfitness;
+	//// update the population file and log file
+	//if(log->curround < log->rounds - 1){
+	//	log->curround += 1;
+	//} else {
+	//	if(log->curorg < log->orgs - 1){
+	//		log->curround = 0;
+	//		log->curorg += 1;
+	//	} else {
+	//		if(log->curgen < log->gens - 1){
+	//			//vector<Species*>::iterator curspecies;
+	//			//for(curspecies=(pop->species).begin();curspecies!=(pop->species).end();++curspecies) {
+
+	//			//	//This experiment control routine issues commands to collect ave
+	//			//	//and max fitness, as opposed to having the snapshot do it, 
+	//			//	//because this allows flexibility in terms of what time
+	//			//	//to observe fitnesses at
+
+	//			//	(*curspecies)->compute_average_fitness();
+	//			//	(*curspecies)->compute_max_fitness();
+	//			//  }
+	//			log->curgen += 1;
+	//			log->curround = 0;
+	//			log->curorg = 0;
+	//			pop->epoch(log->curgen);
+	//			log->orgs = pop->organisms.size();	// update the number of organisms
+	//		} else {
+	//			// reach the max generations
+	//			Broodwar->sendText("Reach the max generations!");
+	//		}
+	//	}
+	//}
+	//
+	//pop->print_to_file_by_species("F:\\Games\\StarCraft00\\bwapi-data\\AI\\population.txt");
+	//log->update();
 }
 
 void ExampleAIModule::onFrame()
@@ -218,18 +274,18 @@ void ExampleAIModule::onFrame()
 			for(int i = 0; i < 3; i++) {
 				Broodwar->sendText("%d th output is: %f", i+1, outputArray[i]);
 			}
-			
-				for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
-					/*for(std::set<Unit*>::const_iterator j=Broodwar->enemy()->getUnits().begin();j!=Broodwar->enemy()->getUnits().end();j++) {
-					if(targetIndex == k++) {
-					(*i)->attack(*j);
-					}
-					}*/
-					if(input->getEnemyUnit(targetIndex)) {
-						(*i)->attack(input->getEnemyUnit(targetIndex));
-						Broodwar->sendText("the type is: %d", input->getEnemyUnit(targetIndex)->getID());
-					}
+
+			for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
+				/*for(std::set<Unit*>::const_iterator j=Broodwar->enemy()->getUnits().begin();j!=Broodwar->enemy()->getUnits().end();j++) {
+				if(targetIndex == k++) {
+				(*i)->attack(*j);
 				}
+				}*/
+				if(input->getEnemyUnit(targetIndex)) {
+					(*i)->attack(input->getEnemyUnit(targetIndex));
+					Broodwar->sendText("the type is: %d", input->getEnemyUnit(targetIndex)->getID());
+				}
+			}
 		}
 
 

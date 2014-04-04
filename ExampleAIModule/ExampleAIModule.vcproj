@@ -208,7 +208,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Logfile.cpp"
+				RelativePath=".\Source\Logfile.cpp"
 				>
 			</File>
 			<File
@@ -274,7 +274,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Logfile.h"
+				RelativePath=".\Source\Logfile.h"
 				>
 			</File>
 			<File

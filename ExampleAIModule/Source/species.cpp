@@ -166,7 +166,7 @@ bool Species::print_to_file(std::ofstream &outFile) {
 
     //Put the fitness for each organism in a comment
     outFile<<std::endl<<"/* Organism #"<<((*curorg)->gnome)->genome_id<<" Fitness: "<<(*curorg)->fitness<<" Error: "<<(*curorg)->error<<" */"<<std::endl;
-
+	//outFile<<"Organism "<<(*curorg)->fitness << " " <<(*curorg)->error<<" "<<(*curorg)->generation << std::endl;
     //If it is a winner, mark it in a comment
     if ((*curorg)->winner) outFile<<"/* ##------$ WINNER "<<((*curorg)->gnome)->genome_id<<" SPECIES #"<<id<<" $------## */"<<std::endl;
 

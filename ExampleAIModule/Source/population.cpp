@@ -136,7 +136,16 @@ Population::Population(const char *filename) {
 				//int idcheck = atoi(curword);
 
                 int idcheck;
-                ss >> idcheck;
+				/*double fitness;
+				double error;
+				int gen;*/
+                
+				/*ss >> fitness;
+				ss >> error;
+				ss >> gen;
+				ss >> curword;*/
+				ss >> idcheck;
+
 
 				// If there isn't metadata, set metadata to ""
 				if(md == false)  {

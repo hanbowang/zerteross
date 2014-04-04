@@ -4,7 +4,7 @@
 namespace BWAPI{
 	Logfile::Logfile(std::string fileName){
 		filename = fileName;
-		std::ifstream iFile(fileName);
+		std::ifstream iFile(fileName.c_str());
 		if(!(iFile >> curgen >> gens >> curorg
              >> orgs >> curround >> rounds
              >> curfitness >> allyMaxHP)){
@@ -30,7 +30,7 @@ namespace BWAPI{
 	};
     
     void Logfile::update(){
-		std::ofstream oFile(this->filename);
+		std::ofstream oFile(this->filename.c_str());
 		oFile << this->curgen << " " << this->gens << " " << this->curorg << " "
         << this->orgs << " " << this->curround << " " << this->rounds << " "
 		<< this->curfitness << " " << this->allyMaxHP << std::endl;
