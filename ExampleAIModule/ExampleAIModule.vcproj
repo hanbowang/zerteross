@@ -286,6 +286,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NNController.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\nnode.h"
 				>
 			</File>

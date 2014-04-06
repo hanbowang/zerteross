@@ -15,6 +15,8 @@ bool analysis_just_finished;
 BWTA::Region* home;
 BWTA::Region* enemy_base;
 NEAT::Network *net;
+std::string AI_PATH = "F:\\Games\\StarCraft00\\bwapi-data\\AI\\";
+
 
 void ExampleAIModule::onStart()
 {
@@ -39,9 +41,9 @@ void ExampleAIModule::onStart()
 
 	// Initialize the neural network
 	NEAT::Population *pop = 0;
-	BWAPI::Logfile* log = new BWAPI::Logfile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\logfile.txt");
-	pop = new Population("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\population.txt");
-	std::ifstream iFile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\population.txt");
+	BWAPI::Logfile* log = new BWAPI::Logfile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\logfile.txt");
+	pop = new Population("F:\\Games\\StarCraft00\\bwapi-data\\AI\\population.txt");
+	std::ifstream iFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\population.txt");
 	char curword[20];
 	int popgen;
 	int organisms;
@@ -166,14 +168,14 @@ void ExampleAIModule::onEnd(bool isWinner)
 	}
 
 
-	BWAPI::Logfile* log = new BWAPI::Logfile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\logfile.txt");
+	BWAPI::Logfile* log = new BWAPI::Logfile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\logfile.txt");
 	if(log->curorg < log->orgs){
 		if(log->curorg == 0 && log->curround == 0){
-			std::ofstream oFile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\fitness.txt");
+			std::ofstream oFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\fitness.txt");
 			oFile << log->curgen << " " << log->curorg << " " << log->curround << " " << allyHP << " " << enemyHP << " " << log->allyMaxHP << std::endl;
 			oFile.close();
 		} else {
-			std::ofstream oFile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\fitness.txt", std::ofstream::app);
+			std::ofstream oFile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\fitness.txt", std::ofstream::app);
 			oFile << log->curgen << " " << log->curorg << " " << log->curround << " " << allyHP << " " << enemyHP << " " << log->allyMaxHP << std::endl;
 			oFile.close();
 		}

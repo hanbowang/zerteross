@@ -1,4 +1,4 @@
-#include "Input.h"
+﻿#include "Input.h"
 #include <algorithm>
 
 namespace BWAPI{
@@ -44,6 +44,12 @@ namespace BWAPI{
 		}
 
 	}
+
+	//Input::Input(const int temp, const std::set<BWAPI::Unit*> allyUnits, const std::set<BWAPI::Unit*> enemyUnits)
+	//{
+	//	
+	//	asdf;
+	//}
 
 	void Input::sortUnitsVec(std::vector<BWAPI::Unit*> &v){
 		bool finished = false;
