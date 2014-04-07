@@ -29,7 +29,7 @@ void ExampleAIModule::onStart()
 	//Broodwar->enableFlag(Flag::UserInput);
 	// Uncomment to enable complete map information
 	Broodwar->enableFlag(Flag::CompleteMapInformation);
-	Broodwar->setLocalSpeed(0);
+	//Broodwar->setLocalSpeed(0);
 	//Broodwar->setFrameSkip(5);
 	//Game::setGUI(false);
 
@@ -44,7 +44,9 @@ void ExampleAIModule::onStart()
 	// Initialize the neural network controller
 	//std::string configFilePath = "C:\\Program Files\\StarCraft\\bwapi-data\\AI\\nncontroller_config.ini";
 	std::string configFilePath = "nncontroller_config.ini";
-	controller = new BWAPI::NNController(Broodwar->self(), Broodwar->enemy(), configFilePath.c_str());
+	//Broodwar->sendText("we are good");
+	//controller = new BWAPI::NNController(Broodwar->self(), Broodwar->enemy(), configFilePath.c_str());
+	controller = new BWAPI::NNController(Broodwar->self(), configFilePath.c_str());
 }
 
 void ExampleAIModule::onEnd(bool isWinner)
@@ -106,7 +108,9 @@ void ExampleAIModule::onFrame()
 	
 	// give order to units every specified interval
 	if(Broodwar->getFrameCount() % 10 == 0 && Broodwar->getFrameCount() > 0){
-
+		if(Broodwar->getFrameCount() == 1){
+			controller->initEnemy(Broodwar->enemy());
+		}
 		// use controller to give order to units
 		controller->takeAction();
 	}

@@ -13,8 +13,9 @@ namespace BWAPI{
 	class NNController
 	{
 	public:
-		NNController(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer, std::string filename);
-		//void initEnemyUnits(std::set<BWAPI::Unit*> enemyUnitsIn);
+		//NNController(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer, std::string filename);
+		NNController(BWAPI::Player* selfPlayer, std::string filename);
+		void initEnemy(BWAPI::Player* enemyPlayer);
 		void takeAction();
 		void log();
 		
