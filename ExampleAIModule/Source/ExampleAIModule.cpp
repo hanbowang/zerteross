@@ -4,7 +4,8 @@
 #include <cstring>
 #include <stdlib.h>
 #include "Input.h"
-#include "Logfile.h"
+//#include "Logfile.h"
+#include "NNController.h"
 
 using namespace BWAPI;
 using namespace std;
@@ -14,8 +15,9 @@ bool analyzed;
 bool analysis_just_finished;
 BWTA::Region* home;
 BWTA::Region* enemy_base;
-NEAT::Network *net;
-std::string AI_PATH = "F:\\Games\\StarCraft00\\bwapi-data\\AI\\";
+BWAPI::NNController* controller;
+//NEAT::Network *net;
+//std::string AI_PATH = "F:\\Games\\StarCraft00\\bwapi-data\\AI\\";
 
 
 void ExampleAIModule::onStart()

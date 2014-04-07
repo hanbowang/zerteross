@@ -95,7 +95,7 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			CharacterSet="1"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -220,6 +220,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\NNController.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\nnode.cpp"
 				>
 			</File>
@@ -286,7 +290,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\NNController.h"
+				RelativePath=".\Source\NNController.h"
 				>
 			</File>
 			<File
