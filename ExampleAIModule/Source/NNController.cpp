@@ -22,9 +22,9 @@ namespace BWAPI{
 		GetPrivateProfileString("General",  "resultFileName", "", pResult, 255, configFile.c_str());
 		resultFileName = pResult;
 
-		gens = GetPrivateProfileInt("General", "gens", 0, configFile.c_str());
-		organisms = GetPrivateProfileInt("General", "organisms", 0, configFile.c_str());
-		rounds = GetPrivateProfileInt("General", "rounds", 0, configFile.c_str());
+		gens = GetPrivateProfileInt("nncontroller", "gens", 0, configFile.c_str());
+		organisms = GetPrivateProfileInt("nncontroller", "organisms", 0, configFile.c_str());
+		rounds = GetPrivateProfileInt("nncontroller", "rounds", 0, configFile.c_str());
 
 		// read the current gen and organism number from the population.txt
 		std::ifstream iFile(popFileName.c_str());
@@ -38,12 +38,12 @@ namespace BWAPI{
 		iFile.close();
 
 		// reset the counters / get current state of the counters
-		int reset = GetPrivateProfileInt("General",  "reset", 0, configFile.c_str());
+		int reset = GetPrivateProfileInt("nncontroller",  "reset", 0, configFile.c_str());
 		if(reset == 0){
-			curgen = GetPrivateProfileInt("General", "curgen", 0, configFile.c_str());
-			curorg = GetPrivateProfileInt("General", "curorg", 0, configFile.c_str());
-			curround = GetPrivateProfileInt("General", "curround", 0, configFile.c_str());
-			maxHP = GetPrivateProfileInt("General", "maxHP", 0, configFile.c_str());
+			curgen = GetPrivateProfileInt("nncontroller", "curgen", 0, configFile.c_str());
+			curorg = GetPrivateProfileInt("nncontroller", "curorg", 0, configFile.c_str());
+			curround = GetPrivateProfileInt("nncontroller", "curround", 0, configFile.c_str());
+			maxHP = GetPrivateProfileInt("nncontroller", "maxHP", 0, configFile.c_str());
 
 			// if this is the begin of next generation, reset the curorg, organisms and curround
 			if(curgen < popgen){
@@ -53,35 +53,36 @@ namespace BWAPI{
 				curround = 0;
 				std::stringstream ss;
 				ss << curgen;
-				WritePrivateProfileString("General", "curgen", ss.str().c_str(), configFile.c_str());
+				WritePrivateProfileString("nncontroller", "curgen", ss.str().c_str(), configFile.c_str());
 				ss.clear();
 				ss << curorg;
-				WritePrivateProfileString("General", "curorg", ss.str().c_str(), configFile.c_str());
+				WritePrivateProfileString("nncontroller", "curorg", ss.str().c_str(), configFile.c_str());
 				ss.clear();
 				ss << organisms;
-				WritePrivateProfileString("General", "organisms", ss.str().c_str(), configFile.c_str());
+				WritePrivateProfileString("nncontroller", "organisms", ss.str().c_str(), configFile.c_str());
 				ss.clear();
 				ss << curround;
-				WritePrivateProfileString("General", "curround", ss.str().c_str(), configFile.c_str());
+				WritePrivateProfileString("nncontroller", "curround", ss.str().c_str(), configFile.c_str());
 				ss.clear();
 			}
 		} else {
 			curgen = 1;
-			WritePrivateProfileString("General", "curgen", "1", configFile.c_str());
+			WritePrivateProfileString("nncontroller", "curgen", "1", configFile.c_str());
 			curorg = 0;
-			WritePrivateProfileString("General", "curorg", "0", configFile.c_str());
+			WritePrivateProfileString("nncontroller", "curorg", "0", configFile.c_str());
 			curround = 0;
-			WritePrivateProfileString("General", "curround", "0", configFile.c_str());
+			WritePrivateProfileString("nncontroller", "curround", "0", configFile.c_str());
 			maxHP = 0;
 			for(std::set<Unit*>::const_iterator i=self->getUnits().begin();i!=self->getUnits().end();i++){
 				maxHP += (*i)->getType().maxHitPoints();
 			}
 			std::stringstream MHPs;
 			MHPs << maxHP;
-			WritePrivateProfileString("General", "maxHP", MHPs.str().c_str(), configFile.c_str());
+			WritePrivateProfileString("nncontroller", "maxHP", MHPs.str().c_str(), configFile.c_str());
+			MHPs.clear();
 
 			// reset the reset mark
-			WritePrivateProfileString("General", "reset", "0", configFile.c_str());
+			WritePrivateProfileString("nncontroller", "reset", "0", configFile.c_str());
 		}
 
 		// generate population from population file and retrieve neural network
@@ -181,13 +182,15 @@ namespace BWAPI{
 				
 				std::stringstream ss;
 				ss << curorg;
-				WritePrivateProfileString("General", "curorg", ss.str().c_str(), configFile.c_str());
-				WritePrivateProfileString("General", "curround", "0", configFile.c_str());
+				WritePrivateProfileString("nncontroller", "curorg", ss.str().c_str(), configFile.c_str());
+				WritePrivateProfileString("nncontroller", "curround", "0", configFile.c_str());
+				ss.clear();
 			}  else {
 				curround += 1;
 				std::stringstream ss;
 				ss << curround;
-				WritePrivateProfileString("General", "curround", ss.str().c_str(), configFile.c_str());
+				WritePrivateProfileString("nncontroller", "curround", ss.str().c_str(), configFile.c_str());
+				ss.clear();
 			}
 		}
 

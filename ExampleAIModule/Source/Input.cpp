@@ -25,6 +25,7 @@ namespace BWAPI{
 		std::vector<BWAPI::Unit*> enemyUnitsVec(enemyUnits.begin(), enemyUnits.end());
 		sortUnitsVec(enemyUnitsVec);
 		
+		_outputArray[0] = 1.0;
 		_outputArray[ALLY_HP] = _allyTotalHealth;
 		_outputArray[ALLY_DPF] = _allyDPF;
 	

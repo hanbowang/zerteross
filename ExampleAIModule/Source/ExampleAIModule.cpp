@@ -42,11 +42,9 @@ void ExampleAIModule::onStart()
 	show_visibility_data=false;
 
 	// Initialize the neural network controller
-	std::string configFilePath = "C:\\Program Files\\StarCraft\\bwapi-data\\AI\\nncontroller_config.ini";
+	//std::string configFilePath = "C:\\Program Files\\StarCraft\\bwapi-data\\AI\\nncontroller_config.ini";
+	std::string configFilePath = "nncontroller_config.ini";
 	controller = new BWAPI::NNController(Broodwar->self(), Broodwar->enemy(), configFilePath.c_str());
-
-	
-	
 }
 
 void ExampleAIModule::onEnd(bool isWinner)

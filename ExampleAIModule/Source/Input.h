@@ -11,8 +11,11 @@ public:
 		ALLY_HP,
 		ALLY_DPF,
 		ENEMY_DISTANCE,
-		ENEMY_DPF = 5,
-		ENEMY_HP = 8
+		//ENEMY_DPF = 5,
+		//ENEMY_HP = 8
+		// change index accordingly for addition of bias
+		ENEMY_DPF = 6,
+		ENEMY_HP = 9
 	};
 	
 	double* getInputArray();
@@ -21,7 +24,8 @@ public:
 private:
 	int _allyTotalHealth;
 	double _allyDPF;
-	double _outputArray[11];
+	//double _outputArray[11];
+	double _outputArray[12]; // add one input for biasing! It's the first element
 	std::vector<Unit*> _enemyUnits;
 	BWAPI::Position _allyCenter;
 	void Input::sortUnitsVec(std::vector<BWAPI::Unit*> &v);
