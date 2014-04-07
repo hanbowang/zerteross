@@ -7,6 +7,7 @@
 namespace BWAPI{
 	//NNController::NNController(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer, std::string filename){
 	NNController::NNController(BWAPI::Player* selfPlayer, std::string filename){
+
 		// initialize the players
 		self = selfPlayer;
 		//enemy = enemyPlayer;
@@ -94,14 +95,20 @@ namespace BWAPI{
 		}
 	}
 
-	void NNController::initEnemy(BWAPI::Player* enemyPlayer){
+	//void NNController::initEnemy(BWAPI::Player* enemyPlayer){
+	//	enemy = enemyPlayer;
+	//	//enemyUnits = enemyUnitsIn;
+	//}
+
+	void NNController::initUnits(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer){
+		self = selfPlayer;
 		enemy = enemyPlayer;
+		input = new Input(self->getUnits(), enemy->getUnits());
 		//enemyUnits = enemyUnitsIn;
 	}
 
 	void NNController::takeAction(){
 
-		Input* input = new Input(self->getUnits(), enemy->getUnits());
 		double* inputArray = input->getInputArray();
 		net->load_sensors(inputArray);
 
@@ -151,7 +158,12 @@ namespace BWAPI{
 		Broodwar->sendText("=============================");
 	}
 
-	void NNController::log(){
+	void NNController::log(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer){
+
+		// get players
+		self = selfPlayer;
+		enemy = enemyPlayer;
+
 		// get combat result
 		int allyHP = 0;
 		int enemyHP = 0;
@@ -162,38 +174,42 @@ namespace BWAPI{
 			enemyHP += (*i)->getHitPoints();
 		}
 
-		//// if this is a valid match, log the results and update counters
-		//if(curorg < organisms){
-		//	// log combat result
-		//	// if this is the first round overwirte the result file, otherwise append to it
-		//	std::ofstream* oFile;
-		//	if(curround == 0){
-		//		oFile = new std::ofstream(resultFileName.c_str());
-		//	} else {
-		//		oFile = new std::ofstream(resultFileName.c_str());
-		//	}
-		//	*oFile << curgen << " " << curorg << " " << curround << " " << allyHP << " " << enemyHP << " " << maxHP << std::endl;
-		//	(*oFile).close();
-		//	delete oFile;
+		// if this is a valid match, log the results and update counters
+		if(curorg < organisms){
+			// log combat result
+			// if this is the first round overwirte the result file, otherwise append to it
+			std::ofstream* oFile;
+			if(curround == 0){
+				oFile = new std::ofstream(resultFileName.c_str());
+			} else {
+				oFile = new std::ofstream(resultFileName.c_str(), std::ofstream::app);
+			}
+			*oFile << curgen << " " << curorg << " " << curround << " " << allyHP << " " << enemyHP << " " << maxHP << std::endl;
+			(*oFile).close();
+			delete oFile;
 
-		//	// update counters
-		//	if(curround == rounds - 1){
-		//		curorg += 1;
-		//		curround = 0;
-		//		
-		//		std::stringstream ss;
-		//		ss << curorg;
-		//		WritePrivateProfileString("nncontroller", "curorg", ss.str().c_str(), configFile.c_str());
-		//		WritePrivateProfileString("nncontroller", "curround", "0", configFile.c_str());
-		//		ss.clear();
-		//	}  else {
-		//		curround += 1;
-		//		std::stringstream ss;
-		//		ss << curround;
-		//		WritePrivateProfileString("nncontroller", "curround", ss.str().c_str(), configFile.c_str());
-		//		ss.clear();
-		//	}
-		//}
+			// update counters
+			if(curround == rounds - 1){
+				curorg += 1;
+				curround = 0;
+				
+				std::stringstream ss;
+				ss << curorg;
+				WritePrivateProfileString("nncontroller", "curorg", ss.str().c_str(), configFile.c_str());
+				WritePrivateProfileString("nncontroller", "curround", "0", configFile.c_str());
+				ss.clear();
+			}  else {
+				curround += 1;
+				std::stringstream ss;
+				ss << curround;
+				WritePrivateProfileString("nncontroller", "curround", ss.str().c_str(), configFile.c_str());
+				ss.clear();
+			}
+		}
+		
+		// delete input object
+		delete input;
+		input = NULL;
 
 		// delete pop object
 		delete pop;

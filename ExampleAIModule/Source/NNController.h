@@ -15,9 +15,10 @@ namespace BWAPI{
 	public:
 		//NNController(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer, std::string filename);
 		NNController(BWAPI::Player* selfPlayer, std::string filename);
-		void initEnemy(BWAPI::Player* enemyPlayer);
+		//void initEnemy(BWAPI::Player* enemyPlayer);
+		void initUnits(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer);
 		void takeAction();
-		void log();
+		void log(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer);
 		
 
 	private:
@@ -34,6 +35,7 @@ namespace BWAPI{
 		NEAT::Network* net;
 		BWAPI::Player* self;
 		BWAPI::Player* enemy;
+		BWAPI::Input* input;
 		//std::set<BWAPI::Unit*> allyUnits;
 		//std::set<BWAPI::Unit*> enemyUnits;
 		std::string configFile;
