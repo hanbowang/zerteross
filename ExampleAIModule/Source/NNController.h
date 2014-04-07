@@ -13,28 +13,28 @@ namespace BWAPI{
 	class NNController
 	{
 	public:
-		NNController(std::string filename);
-		void unitsInit(std::set<BWAPI::Unit*> allyUnitsIn, std::set<BWAPI::Unit*> enemyUnitsIn);
+		NNController(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer, std::string filename);
+		//void initEnemyUnits(std::set<BWAPI::Unit*> enemyUnitsIn);
 		void takeAction();
 		void log();
-		//enum NNControllerType{
-		//	CONFIGFILE = "nncontroller_config.ini"
-		//};
 		
 
 	private:
 		std::string popFileName;
+		std::string resultFileName;
 		int curgen;
 		int gens;
 		int curorg;
 		int organisms;
 		int curround;
 		int rounds;
-		int allyMaxHP
-		NEAT::Population *pop;
-		NEAT::Network *net;
-		std::set<BWAPI::Unit*> allyUnits;
-		std::set<BWAPI::Unit*> enemyUnits;
+		int maxHP;
+		NEAT::Population* pop;
+		NEAT::Network* net;
+		BWAPI::Player* self;
+		BWAPI::Player* enemy;
+		//std::set<BWAPI::Unit*> allyUnits;
+		//std::set<BWAPI::Unit*> enemyUnits;
 		std::string configFile;
 
 		
