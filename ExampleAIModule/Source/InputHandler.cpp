@@ -3,10 +3,11 @@
 #include <math.h>
 
 namespace BWAPI{
-	InputHandler::InputHandler(const std::set<BWAPI::Unit*> allyUnits, const std::set<BWAPI::Unit*> enemyUnits){
+	InputHandler::InputHandler(const std::set<BWAPI::Unit*> allyUnits, const std::set<BWAPI::Unit*> enemyUnits):
+	_allyNum(allyUnits.size()),
+	_enemyNum(enemyUnits.size())
+	{
 		// calculate the input demension and relative index
-		_allyNum = allyUnits.size();
-		_enemyNum = enemyUnits.size();
 		_inputSize = 1 + _allyNum + _enemyNum + _allyNum * _enemyNum * 2;
 		_enemyHPIndex = 1 + _allyNum;
 		_positionIndex = 1 + _allyNum + _enemyNum;

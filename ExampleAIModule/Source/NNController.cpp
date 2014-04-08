@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <Windows.h>
-#include "Input.h"
+//#include "Input.h"
 
 namespace BWAPI{
 	//NNController::NNController(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer, std::string filename){
@@ -52,19 +52,22 @@ namespace BWAPI{
 				curorg = 0;
 				organisms = orgs;
 				curround = 0;
-				std::stringstream ss;
-				ss << curgen;
-				WritePrivateProfileString("nncontroller", "curgen", ss.str().c_str(), configFile.c_str());
-				ss.clear();
-				ss << curorg;
-				WritePrivateProfileString("nncontroller", "curorg", ss.str().c_str(), configFile.c_str());
-				ss.clear();
-				ss << organisms;
-				WritePrivateProfileString("nncontroller", "organisms", ss.str().c_str(), configFile.c_str());
-				ss.clear();
-				ss << curround;
-				WritePrivateProfileString("nncontroller", "curround", ss.str().c_str(), configFile.c_str());
-				ss.clear();
+				std::stringstream ss1;
+				ss1 << curgen;
+				WritePrivateProfileString("nncontroller", "curgen", ss1.str().c_str(), configFile.c_str());
+				ss1.clear();
+				std::stringstream ss2;
+				ss2 << curorg;
+				WritePrivateProfileString("nncontroller", "curorg", ss2.str().c_str(), configFile.c_str());
+				ss2.clear();
+				std::stringstream ss3;
+				ss3 << organisms;
+				WritePrivateProfileString("nncontroller", "organisms", ss3.str().c_str(), configFile.c_str());
+				ss3.clear();
+				std::stringstream ss4;
+				ss4 << curround;
+				WritePrivateProfileString("nncontroller", "curround", ss4.str().c_str(), configFile.c_str());
+				ss4.clear();
 			}
 		} else {
 			curgen = 1;
@@ -77,10 +80,18 @@ namespace BWAPI{
 			for(std::set<Unit*>::const_iterator i=self->getUnits().begin();i!=self->getUnits().end();i++){
 				maxHP += (*i)->getType().maxHitPoints();
 			}
-			std::stringstream MHPs;
-			MHPs << maxHP;
-			WritePrivateProfileString("nncontroller", "maxHP", MHPs.str().c_str(), configFile.c_str());
-			MHPs.clear();
+			std::stringstream ss1;
+			ss1 << maxHP;
+			WritePrivateProfileString("nncontroller", "maxHP", ss1.str().c_str(), configFile.c_str());
+			ss1.clear();
+
+			std::stringstream ss2;
+			organisms = orgs;
+			//std::cout << "orgs is: " << orgs << " and the organisms is: " << organisms << std::endl;
+			ss2 << organisms;
+			WritePrivateProfileString("nncontroller", "organisms", ss2.str().c_str(), configFile.c_str());
+			ss2.clear();
+			//std::cout << "organisms in ini is: " << GetPrivateProfileInt("nncontroller", "organisms", 0, configFile.c_str());
 
 			// reset the reset mark
 			WritePrivateProfileString("nncontroller", "reset", "0", configFile.c_str());

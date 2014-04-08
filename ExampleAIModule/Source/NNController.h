@@ -6,10 +6,11 @@
 #include "population.h"
 #include "network.h"
 #include "nnode.h"
+#include "Input.h"
 
 
 namespace BWAPI{
-
+	//class Input;
 	class NNController
 	{
 	public:
