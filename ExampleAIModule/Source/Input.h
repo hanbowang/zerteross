@@ -8,6 +8,7 @@ public:
 	Input(std::set<BWAPI::Unit*> allyUnits, std::set<BWAPI::Unit*> enemyUnits);
 	Unit* getEnemyUnit(int index);
 	enum InputType{
+		BIAS,
 		ALLY_HP,
 		ALLY_DPF,
 		ENEMY_DISTANCE,

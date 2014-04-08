@@ -204,7 +204,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\InputFull.cpp"
+				RelativePath=".\Source\InputHandler.cpp"
 				>
 			</File>
 			<File
@@ -233,6 +233,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\organism.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\OutputHandler.cpp"
 				>
 			</File>
 			<File
@@ -278,7 +282,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\InputFull.h"
+				RelativePath=".\Source\InputHandler.h"
 				>
 			</File>
 			<File
@@ -307,6 +311,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\organism.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\OutputHandler.h"
 				>
 			</File>
 			<File

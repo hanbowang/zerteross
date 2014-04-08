@@ -1,76 +1,67 @@
-﻿#include "Input.h"
+﻿#include "InputFull.h"
 #include <algorithm>
+#include <math.h>
 
 namespace BWAPI{
-	Input::Input(const std::set<BWAPI::Unit*> allyUnits, const std::set<BWAPI::Unit*> enemyUnits):
-	_allyTotalHealth(0),
-	_allyDPF(0)
-	{
+	InputFull::InputFull(const std::set<BWAPI::Unit*> allyUnits, const std::set<BWAPI::Unit*> enemyUnits){
+		// calculate the input demension and relative index
+		_allyNum = allyUnits.size();
+		_enemyNum = enemyUnits.size();
+		_inputSize = 1 + _allyNum + _enemyNum + _allyNum * _enemyNum * 2;
+		_enemyHPIndex = 1 + _allyNum;
+		_positionIndex = 1 + _allyNum + _enemyNum;
 		
-		int centerX = 0;
-		int centerY = 0;
-		for (std::set<Unit*>::const_iterator i=allyUnits.begin();i!=allyUnits.end();i++){
-			_allyTotalHealth += (*i)->getHitPoints();
-			BWAPI::WeaponType weapon = (*i)->getType().groundWeapon();
-			_allyDPF += weapon.damageAmount() / (double)weapon.damageCooldown();
-			centerX += (*i)->getPosition().x();
-			centerY += (*i)->getPosition().y();
-		}
-		if(!allyUnits.empty()) {
-		centerX /= allyUnits.size();
-		centerY /= allyUnits.size();
-		}
-		BWAPI::Position allyCenter(centerX, centerY);
-		_allyCenter = allyCenter;
+		// convert the units set into vector
 		std::vector<BWAPI::Unit*> enemyUnitsVec(enemyUnits.begin(), enemyUnits.end());
-		sortUnitsVec(enemyUnitsVec);
-		
-		_outputArray[0] = 1.0;
-		_outputArray[ALLY_HP] = _allyTotalHealth;
-		_outputArray[ALLY_DPF] = _allyDPF;
-	
-		for (int i = 0; i < 3; i++){
-			if (i < (int)enemyUnitsVec.size()){
-				_enemyUnits.push_back(enemyUnitsVec[i]);
-				_outputArray[ENEMY_DISTANCE+i] = enemyUnitsVec[i]->getDistance(_allyCenter);
-				BWAPI::WeaponType weapon = enemyUnitsVec[i]->getType().groundWeapon();
-				_outputArray[ENEMY_DPF+i] = weapon.damageAmount() / (double)weapon.damageCooldown();
-				_outputArray[ENEMY_HP+i] = enemyUnitsVec[i]->getHitPoints();
-			}
-			else{
-				_outputArray[ENEMY_DISTANCE+i] = 10000;
-				_outputArray[ENEMY_DPF+i] = 0;
-				_outputArray[ENEMY_HP] = 0;
-			}
+		std::vector<BWAPI::Unit*> allyUnitsVec(allyUnits.begin(), allyUnits.end());
+		for(int i = 0; i < _allyNum; i++){
+			_allyUnits.push_back(allyUnitsVec[i]);
 		}
-
+		for(int i = 0; i < _enemyNum; i++) {
+			_enemyUnits.push_back(enemyUnitsVec[i]);
+		}
 	}
 
-	//Input::Input(const int temp, const std::set<BWAPI::Unit*> allyUnits, const std::set<BWAPI::Unit*> enemyUnits)
-	//{
-	//	
-	//	asdf;
-	//}
+	double* InputFull::getInputArray(){
+		// create inputArray and assign bias element
+		double* inputArray;
+		inputArray = new double[_inputSize];
+		inputArray[BIAS] = 1.0;
 
-	void Input::sortUnitsVec(std::vector<BWAPI::Unit*> &v){
-		bool finished = false;
-		
-		while (!finished){
-			finished = true;
-			for (int i = 0; i < (int)v.size()-1; i++){
-				if(v[i]->getDistance(_allyCenter) > v[i+1]->getDistance(_allyCenter)){
-					std::swap(v[i],v[i+1]);
-					finished = false;
+		// get the HP of ally units and enemy units
+		for(int i = 0; i < _allyNum; i++){
+			inputArray[ALLY_HP + i] = _allyUnits[i]->getHitPoints();
+		}
+		for(int i = 0; i < _enemyNum; i ++){
+			inputArray[_enemyHPIndex + i] = _enemyUnits[i]->getHitPoints();
+		}
+
+		// get relative position of ally unit - enemy unit pair
+		for(int i = 0; i < _allyNum; i++){
+			for(int j = 0; j < _enemyNum; j++){
+				if(_allyUnits[i]->exists() && _enemyUnits[j]->exists()){
+					// get distance
+					inputArray[_positionIndex + i * _enemyNum * 2 + j * 2] = _allyUnits[i]->getDistance(_enemyUnits[j]);
+					// get angle
+					inputArray[_positionIndex + i * _enemyNum * 2 + j * 2 + 1] = getAngle(_allyUnits[i], _enemyUnits[j]);
+				} else {
+					// assign 0 to nonexisted pair
+					inputArray[_positionIndex + i * _enemyNum * 2 + j * 2] = 0;
+					inputArray[_positionIndex + i * _enemyNum * 2 + j * 2 + 1] = 0;
 				}
 			}
 		}
+		return inputArray;
 	}
 
-	double* Input::getInputArray(){
-		return _outputArray;
+	double InputFull::getAngle(BWAPI::Unit* a, BWAPI::Unit* b){
+		int delta_x = b->getPosition().x() - a->getPosition().x();
+		int delta_y = b->getPosition().y() - a->getPosition().y();
+		double hypotenuse = sqrt(pow(delta_x, 2.0) + pow(delta_y, 2.0));
+		return asin(delta_y / hypotenuse);
 	}
 
-	Unit* Input::getEnemyUnit(int index){
+	Unit* InputFull::getEnemyUnit(int index){
 		if (index < (int)_enemyUnits.size()){
 			return _enemyUnits[index];
 		}
