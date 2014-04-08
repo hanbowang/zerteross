@@ -204,6 +204,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\InputFull.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\link.cpp"
 				>
 			</File>
@@ -271,6 +275,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\Input.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\InputFull.h"
 				>
 			</File>
 			<File
