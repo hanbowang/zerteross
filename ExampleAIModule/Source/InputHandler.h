@@ -1,3 +1,6 @@
+#ifndef INPUTHANDLER_H
+#define INPUTHANDLER_H
+
 #include <BWAPI.h>
 
 namespace BWAPI{
@@ -30,3 +33,5 @@ private:
 	
 };
 }
+
+#endif

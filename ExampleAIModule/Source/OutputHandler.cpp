@@ -4,7 +4,7 @@
 #include <queue>
 
 namespace BWAPI{
-	OutputHandler::OutputHandler(double outputArray[], int outputSize, std::vector<Unit*> allyUnits, std::vector<Unit*> enemyUnits){
+	OutputHandler::OutputHandler(double outputArray[], int outputSize, std::vector<Unit*> allyUnits, std::vector<Unit*> enemyUnits, BWAPI::Game* game){
 		int allyNum = allyUnits.size();
 		int enemyNum = enemyUnits.size();
 		// full size including attack scores for each ally unit enemy unit pair and move score/destination for each ally units
@@ -14,8 +14,8 @@ namespace BWAPI{
 		double maxScore = -10000.0;
 		BWAPI::Unit* target = enemyUnits[0];
 		int outputIndex;
-		double dest_x;
-		double dest_y;
+		int dest_x;
+		int dest_y;
 		double d;
 		double angle;
 
@@ -43,13 +43,16 @@ namespace BWAPI{
 					}
 					outputIndex = i * 6 + 4;
 					if(maxScore < outputArray[outputIndex]){
+						
 						d = outputArray[outputIndex + 1];
 						angle = outputArray[outputIndex + 2];
-						dest_x = allyUnits[i]->getPosition().x() + d * cos(angle);
-						dest_y = allyUnits[i]->getPosition().y() + d * sin(angle);
-						allyUnits[i]->move(BWAPI::Position((int)(dest_x + 0.5), (int)(dest_y + 0.5)));
+						dest_x = allyUnits[i]->getPosition().x() + int(d * cos(angle) + 0.5);
+						dest_y = allyUnits[i]->getPosition().y() + int(d * sin(angle) + 0.5);
+						allyUnits[i]->move(BWAPI::Position(dest_x, dest_y));
+						game->sendText("Ally unit #%d will move to (%d, %d)", i, dest_x, dest_y);
 					} else {
 						allyUnits[i]->attack(target);
+						game->sendText("Ally unit #%d will attack %d", i, target->getType().getID());
 					}
 				}
 			}

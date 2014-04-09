@@ -29,7 +29,7 @@ void ExampleAIModule::onStart()
 	//Broodwar->enableFlag(Flag::UserInput);
 	// Uncomment to enable complete map information
 	Broodwar->enableFlag(Flag::CompleteMapInformation);
-	Broodwar->setLocalSpeed(0);
+	//Broodwar->setLocalSpeed(0);
 	//Broodwar->setFrameSkip(5);
 	//Broodwar->setGUI(false);
 

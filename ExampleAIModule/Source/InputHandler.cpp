@@ -70,4 +70,12 @@ namespace BWAPI{
 			return 0;
 		}
 	}
+
+	std::vector<Unit*> InputHandler::getAllyUnits(){
+		return _allyUnits;
+	}
+
+	std::vector<Unit*> InputHandler::getEnemyUnits(){
+		return _enemyUnits;
+	}
 }

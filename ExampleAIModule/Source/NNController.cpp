@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <Windows.h>
+#include "OutputHandler.h"
 //#include "Input.h"
 
 namespace BWAPI{
@@ -114,13 +115,15 @@ namespace BWAPI{
 	void NNController::initUnits(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer){
 		self = selfPlayer;
 		enemy = enemyPlayer;
-		input = new Input(self->getUnits(), enemy->getUnits());
+		//input = new Input(self->getUnits(), enemy->getUnits());
+		inputHandler = new InputHandler(self->getUnits(), enemy->getUnits());
 		//enemyUnits = enemyUnitsIn;
 	}
 
 	void NNController::takeAction(){
 
-		double* inputArray = input->getInputArray();
+		//double* inputArray = input->getInputArray();
+		double* inputArray = inputHandler->getInputArray();
 		net->load_sensors(inputArray);
 
 		int net_depth = net->max_depth();
@@ -137,8 +140,9 @@ namespace BWAPI{
 				this_out = (*i)->activation;
 			}
 
-
-			double outputArray[3];
+			int outputSize = net->outputs.size();
+			double* outputArray = new double[outputSize];
+			//double outputArray[3];
 			int j = 0;
 			double maxScore = -10000;
 			int targetIndex = 0;
@@ -151,18 +155,24 @@ namespace BWAPI{
 			}
 
 			net->flush();
-			Broodwar->sendText("The target is: %d", targetIndex);
-			for(int i = 0; i < 3; i++) {
-				Broodwar->sendText("%d th output is: %f", i+1, outputArray[i]);
-			}
 
-			for(std::set<Unit*>::const_iterator i=self->getUnits().begin();i!=self->getUnits().end();i++){
+			BWAPI::OutputHandler* outputHandler = new OutputHandler(outputArray, outputSize, inputHandler->getAllyUnits(), inputHandler->getEnemyUnits(), Broodwar);
+			delete outputHandler;
+			outputHandler = NULL;
+			delete outputArray;
+			outputArray = NULL;
+			//Broodwar->sendText("The target is: %d", targetIndex);
+			//for(int i = 0; i < 3; i++) {
+			//	Broodwar->sendText("%d th output is: %f", i+1, outputArray[i]);
+			//}
+
+			/*for(std::set<Unit*>::const_iterator i=self->getUnits().begin();i!=self->getUnits().end();i++){
 				
 				if(input->getEnemyUnit(targetIndex)) {
 					(*i)->attack(input->getEnemyUnit(targetIndex));
 					Broodwar->sendText("the type is: %d", input->getEnemyUnit(targetIndex)->getID());
 				}
-			}
+			}*/
 
 		}
 
@@ -219,8 +229,11 @@ namespace BWAPI{
 		}
 		
 		// delete input object
-		delete input;
-		input = NULL;
+		//delete input;
+		//input = NULL;
+		delete inputHandler;
+		inputHandler = NULL;
+		
 
 		// delete pop object
 		delete pop;
