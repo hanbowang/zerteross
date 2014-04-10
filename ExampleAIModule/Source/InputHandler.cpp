@@ -73,10 +73,12 @@ namespace BWAPI{
 	}
 
 	double InputHandler::getAngle(BWAPI::Unit* a, BWAPI::Unit* b){
+		double PI = 3.14159;
 		int delta_x = b->getPosition().x() - a->getPosition().x();
 		int delta_y = b->getPosition().y() - a->getPosition().y();
 		double hypotenuse = sqrt(pow(delta_x, 2.0) + pow(delta_y, 2.0));
-		return asin(delta_y / hypotenuse);
+		// normalize to (0, 1)
+		return (asin(delta_y / hypotenuse) + PI) / 2 / PI;
 	}
 
 	Unit* InputHandler::getEnemyUnit(int index){

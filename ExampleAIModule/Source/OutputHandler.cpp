@@ -18,6 +18,11 @@ namespace BWAPI{
 		int dest_y;
 		double d;
 		double angle;
+		double PI = 3.14159;
+
+		for(int i = 0; i < outputSize; i++){
+			game->sendText("output %d: %f", i, outputArray[i]);
+		}
 
 		if(outputSize == outputMiniSize){
 			for(int i = 0; i < enemyNum; i++){
@@ -43,9 +48,10 @@ namespace BWAPI{
 					}
 					outputIndex = i * 6 + 4;
 					if(maxScore < outputArray[outputIndex]){
-						// denormalized the relative distance
+						// denormalize the relative distance
 						d = outputArray[outputIndex + 1] * initCentralDist;
-						angle = outputArray[outputIndex + 2];
+						// denormalize the angle
+						angle = outputArray[outputIndex + 2] * 2 * PI - PI;
 						dest_x = allyUnits[i]->getPosition().x() + int(d * cos(angle) + 0.5);
 						dest_y = allyUnits[i]->getPosition().y() + int(d * sin(angle) + 0.5);
 						allyUnits[i]->move(BWAPI::Position(dest_x, dest_y));
