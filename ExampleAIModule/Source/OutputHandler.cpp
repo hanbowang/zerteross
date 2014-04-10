@@ -4,7 +4,7 @@
 #include <queue>
 
 namespace BWAPI{
-	OutputHandler::OutputHandler(double outputArray[], int outputSize, std::vector<Unit*> allyUnits, std::vector<Unit*> enemyUnits, BWAPI::Game* game){
+	OutputHandler::OutputHandler(double outputArray[], int outputSize, std::vector<Unit*> allyUnits, std::vector<Unit*> enemyUnits, BWAPI::Game* game, double initCentralDist){
 		int allyNum = allyUnits.size();
 		int enemyNum = enemyUnits.size();
 		// full size including attack scores for each ally unit enemy unit pair and move score/destination for each ally units
@@ -43,8 +43,8 @@ namespace BWAPI{
 					}
 					outputIndex = i * 6 + 4;
 					if(maxScore < outputArray[outputIndex]){
-						
-						d = outputArray[outputIndex + 1];
+						// denormalized the relative distance
+						d = outputArray[outputIndex + 1] * initCentralDist;
 						angle = outputArray[outputIndex + 2];
 						dest_x = allyUnits[i]->getPosition().x() + int(d * cos(angle) + 0.5);
 						dest_y = allyUnits[i]->getPosition().y() + int(d * sin(angle) + 0.5);

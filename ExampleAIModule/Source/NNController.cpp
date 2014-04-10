@@ -156,7 +156,7 @@ namespace BWAPI{
 
 			net->flush();
 
-			BWAPI::OutputHandler* outputHandler = new OutputHandler(outputArray, outputSize, inputHandler->getAllyUnits(), inputHandler->getEnemyUnits(), Broodwar);
+			BWAPI::OutputHandler* outputHandler = new OutputHandler(outputArray, outputSize, inputHandler->getAllyUnits(), inputHandler->getEnemyUnits(), Broodwar, inputHandler->getInitCentralDist());
 			delete outputHandler;
 			outputHandler = NULL;
 			delete outputArray;

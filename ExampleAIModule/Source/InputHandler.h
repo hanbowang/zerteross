@@ -18,6 +18,7 @@ public:
 	};
 	
 	double* getInputArray();
+	double getInitCentralDist();
 	
 
 private:
@@ -27,6 +28,12 @@ private:
 	int _inputSize;
 	int _enemyHPIndex;
 	int _positionIndex;
+	int _allyUnitMaxHP;
+	double _ally_center_x;
+	double _ally_center_y;
+	double _enemy_center_x;
+	double _enemy_center_y;
+	double _init_central_dist;
 	std::vector<Unit*> _enemyUnits;
 	std::vector<Unit*> _allyUnits;
 	double InputHandler::getAngle(BWAPI::Unit* a, BWAPI::Unit* b);
