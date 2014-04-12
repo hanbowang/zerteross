@@ -134,13 +134,14 @@ namespace BWAPI{
 		double* inputArray = inputHandler->getInputArray();
 		net->load_sensors(inputArray);
 
-		/*if(Broodwar->getFrameCount() == 10){
-			std::ofstream ofile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\input.txt");
-			for(int i = 0; i < 25; i++){
+		if(Broodwar->getFrameCount() == 10){
+			std::ofstream ofile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\input.txt");
+			//std::ofstream ofile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\input.txt");
+			for(int i = 0; i < 12; i++){
 				ofile << inputArray[i] << std::endl;
 			}
 			ofile.close();
-		}*/
+		}
 
 
 		int net_depth = net->max_depth();
@@ -156,45 +157,44 @@ namespace BWAPI{
 			for(std::vector<NEAT::NNode*>::const_iterator i=net->outputs.begin();i != net->outputs.end();i++){
 				this_out = (*i)->activation;
 			}
-
-			int outputSize = net->outputs.size();
-			double* outputArray = new double[outputSize];
-			//double outputArray[3];
-			int j = 0;
-			double maxScore = -10000;
-			int targetIndex = 0;
-			for(std::vector<NEAT::NNode*>::const_iterator i=net->outputs.begin();i != net->outputs.end();i++){
-				if(maxScore < (*i)->activation) {
-					maxScore = (*i)->activation;
-					targetIndex = j;
-				}
-				outputArray[j++] = (*i)->activation;
-			}
-
-			net->flush();
-
-			BWAPI::HandlerFactory* factory = new  BWAPI::HandlerFactory();
-			BWAPI::OutputHandler* outputHandler = factory->createOutHandler(NNType, outputArray, outputSize, inputHandler->getAllyUnits(), inputHandler->getEnemyUnits(), Broodwar, inputHandler->getInitCentralDist());
-			delete factory;
-			factory = NULL;
-			delete outputHandler;
-			outputHandler = NULL;
-			delete outputArray;
-			outputArray = NULL;
-			//Broodwar->sendText("The target is: %d", targetIndex);
-			//for(int i = 0; i < 3; i++) {
-			//	Broodwar->sendText("%d th output is: %f", i+1, outputArray[i]);
-			//}
-
-			/*for(std::set<Unit*>::const_iterator i=self->getUnits().begin();i!=self->getUnits().end();i++){
-				
-				if(input->getEnemyUnit(targetIndex)) {
-					(*i)->attack(input->getEnemyUnit(targetIndex));
-					Broodwar->sendText("the type is: %d", input->getEnemyUnit(targetIndex)->getID());
-				}
-			}*/
-
 		}
+
+		int outputSize = net->outputs.size();
+		double* outputArray = new double[outputSize];
+		//double outputArray[3];
+		int j = 0;
+		//double maxScore = -10000;
+		//int targetIndex = 0;
+		for(std::vector<NEAT::NNode*>::const_iterator i=net->outputs.begin();i != net->outputs.end();i++){
+			/*if(maxScore < (*i)->activation) {
+				maxScore = (*i)->activation;
+				targetIndex = j;
+			}*/
+			outputArray[j++] = (*i)->activation;
+		}
+
+		net->flush();
+
+		BWAPI::HandlerFactory* factory = new  BWAPI::HandlerFactory();
+		BWAPI::OutputHandler* outputHandler = factory->createOutHandler(NNType, outputArray, outputSize, inputHandler->getAllyUnits(), inputHandler->getEnemyUnits(), Broodwar, inputHandler->getInitCentralDist());
+		delete factory;
+		factory = NULL;
+		delete outputHandler;
+		outputHandler = NULL;
+		delete outputArray;
+		outputArray = NULL;
+		//Broodwar->sendText("The target is: %d", targetIndex);
+		//for(int i = 0; i < 3; i++) {
+		//	Broodwar->sendText("%d th output is: %f", i+1, outputArray[i]);
+		//}
+
+		/*for(std::set<Unit*>::const_iterator i=self->getUnits().begin();i!=self->getUnits().end();i++){
+			
+			if(input->getEnemyUnit(targetIndex)) {
+				(*i)->attack(input->getEnemyUnit(targetIndex));
+				Broodwar->sendText("the type is: %d", input->getEnemyUnit(targetIndex)->getID());
+			}
+		}*/
 
 		Broodwar->sendText("=============================");
 	}

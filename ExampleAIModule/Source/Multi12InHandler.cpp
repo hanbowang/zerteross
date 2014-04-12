@@ -10,18 +10,40 @@ namespace BWAPI{
 		
 		std::vector<BWAPI::Unit*> enemyUnitsVec(enemyUnits.begin(), enemyUnits.end());
 		std::vector<BWAPI::Unit*> allyUnitsVec(allyUnits.begin(), allyUnits.end());
-		// get the hp of the ally unit which has biggest hp
-		_allyUnitMaxHP = 0;
+		// get the maximum hp of ally units 
+		_allyMaxHP = 0;
+		// get the initial center distance between ally units and enemy units
+		_ally_center_x = 0;
+		_ally_center_y = 0;
+		_enemy_center_x = 0;
+		_enemy_center_y = 0;
+		// get normalized base
+		_allyMaxDPF = 0;
+		_enemyUnitMaxDPF = 0;
+		_enemyUnitMaxHP = 0;
 		
 		for(int i = 0; i < _allyNum; i++){
 			_allyUnits.push_back(allyUnitsVec[i]);
-			if(_allyUnitMaxHP < allyUnitsVec[i]->getHitPoints()){
-				_allyUnitMaxHP = allyUnitsVec[i]->getHitPoints();
-			}
+			_allyMaxHP += allyUnitsVec[i]->getHitPoints();
+			BWAPI::WeaponType weapon = allyUnitsVec[i]->getType().groundWeapon();
+			_allyMaxDPF += weapon.damageAmount() / (double)weapon.damageCooldown();
+			_ally_center_x += allyUnitsVec[i]->getPosition().x();
+			_ally_center_y += allyUnitsVec[i]->getPosition().y();
 		}
 		for(int i = 0; i < _enemyNum; i++) {
 			_enemyUnits.push_back(enemyUnitsVec[i]);
+			if(_enemyUnitMaxHP < enemyUnitsVec[i]->getHitPoints()){
+				_enemyUnitMaxHP = enemyUnitsVec[i]->getHitPoints();
+			}
+			BWAPI::WeaponType weapon = enemyUnitsVec[i]->getType().groundWeapon();
+			if(_enemyUnitMaxDPF < weapon.damageAmount() / (double)weapon.damageCooldown()){
+				_enemyUnitMaxDPF = weapon.damageAmount() / (double)weapon.damageCooldown();
+			}
+			_enemy_center_x += enemyUnitsVec[i]->getPosition().x();
+			_enemy_center_y += enemyUnitsVec[i]->getPosition().y();
 		}
+		_init_central_dist = sqrt(pow((_ally_center_x / allyUnitsVec.size() - _enemy_center_x / enemyUnitsVec.size()), 2.0) + 
+			pow((_ally_center_y / allyUnitsVec.size() - _enemy_center_y / enemyUnitsVec.size()), 2.0));
 		
 		
 	}
@@ -48,17 +70,17 @@ namespace BWAPI{
 		_allyCenter = allyCenter;
 
 		_outputArray[BIAS] = 1.0;
-		_outputArray[ALLY_HP] = _allyTotalHealth;
-		_outputArray[ALLY_DPF] = _allyDPF;
+		_outputArray[ALLY_HP] = _allyTotalHealth / _allyMaxHP;
+		_outputArray[ALLY_DPF] = _allyDPF / _allyMaxDPF;
 
 		for (int i = 0; i < _enemyUnits.size(); i++){
 			if (_enemyUnits[i]->exists()){
-				_outputArray[ENEMY_DISTANCE+i] = _enemyUnits[i]->getDistance(_allyCenter);
+				_outputArray[ENEMY_DISTANCE+i] = _enemyUnits[i]->getDistance(_allyCenter) / _init_central_dist;
 				BWAPI::WeaponType weapon = _enemyUnits[i]->getType().groundWeapon();
-				_outputArray[ENEMY_DPF+i] = weapon.damageAmount() / (double)weapon.damageCooldown();
-				_outputArray[ENEMY_HP+i] = _enemyUnits[i]->getHitPoints();
+				_outputArray[ENEMY_DPF+i] = weapon.damageAmount() / (double)weapon.damageCooldown()  / _enemyUnitMaxDPF;
+				_outputArray[ENEMY_HP+i] = _enemyUnits[i]->getHitPoints() / _enemyUnitMaxHP;
 			}else{
-				_outputArray[ENEMY_DISTANCE+i] = 10000;
+				_outputArray[ENEMY_DISTANCE+i] = 0;
 				_outputArray[ENEMY_DPF+i] = 0;
 				_outputArray[ENEMY_HP] = 0;
 			}

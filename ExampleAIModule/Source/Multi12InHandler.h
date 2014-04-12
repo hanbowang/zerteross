@@ -31,6 +31,10 @@ public:
 private:
 	int _allyTotalHealth;
 	double _allyDPF;
+	int _allyMaxHP;
+	double _allyMaxDPF;
+	double _enemyUnitMaxDPF;
+	double _enemyUnitMaxHP;
 	//double _outputArray[11];
 	double _outputArray[12]; // add one input for biasing! It's the first element
 	BWAPI::Position _allyCenter;
