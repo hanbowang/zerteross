@@ -3,6 +3,7 @@
 #include <sstream>
 #include <Windows.h>
 #include "OutputHandler.h"
+#include "HandlerFactory.h"
 //#include "Input.h"
 
 namespace BWAPI{
@@ -23,6 +24,9 @@ namespace BWAPI{
 
 		GetPrivateProfileString("General",  "resultFileName", "", pResult, 255, configFile.c_str());
 		resultFileName = pResult;
+
+		GetPrivateProfileString("nncontroller",  "NNType", "", pResult, 255, configFile.c_str());
+		NNType = pResult;
 
 		gens = GetPrivateProfileInt("General", "gens", 0, configFile.c_str());
 		organisms = GetPrivateProfileInt("nncontroller", "organisms", 0, configFile.c_str());
@@ -116,7 +120,11 @@ namespace BWAPI{
 		self = selfPlayer;
 		enemy = enemyPlayer;
 		//input = new Input(self->getUnits(), enemy->getUnits());
-		inputHandler = new InputHandler(self->getUnits(), enemy->getUnits());
+		BWAPI::HandlerFactory* factory = new  BWAPI::HandlerFactory();
+		inputHandler = factory->createInHandler(NNType, self->getUnits(), enemy->getUnits());
+		delete factory;
+		factory = NULL;
+		//inputHandler = new InputHandler(self->getUnits(), enemy->getUnits());
 		//enemyUnits = enemyUnitsIn;
 	}
 
@@ -126,13 +134,13 @@ namespace BWAPI{
 		double* inputArray = inputHandler->getInputArray();
 		net->load_sensors(inputArray);
 
-		if(Broodwar->getFrameCount() == 10){
+		/*if(Broodwar->getFrameCount() == 10){
 			std::ofstream ofile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\input.txt");
 			for(int i = 0; i < 25; i++){
 				ofile << inputArray[i] << std::endl;
 			}
 			ofile.close();
-		}
+		}*/
 
 
 		int net_depth = net->max_depth();
@@ -165,7 +173,10 @@ namespace BWAPI{
 
 			net->flush();
 
-			BWAPI::OutputHandler* outputHandler = new OutputHandler(outputArray, outputSize, inputHandler->getAllyUnits(), inputHandler->getEnemyUnits(), Broodwar, inputHandler->getInitCentralDist());
+			BWAPI::HandlerFactory* factory = new  BWAPI::HandlerFactory();
+			BWAPI::OutputHandler* outputHandler = factory->createOutHandler(NNType, outputArray, outputSize, inputHandler->getAllyUnits(), inputHandler->getEnemyUnits(), Broodwar, inputHandler->getInitCentralDist());
+			delete factory;
+			factory = NULL;
 			delete outputHandler;
 			outputHandler = NULL;
 			delete outputArray;

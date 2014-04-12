@@ -6,7 +6,7 @@
 #include "population.h"
 #include "network.h"
 #include "nnode.h"
-#include "Input.h"
+//#include "Input.h"
 #include "InputHandler.h"
 
 
@@ -43,6 +43,7 @@ namespace BWAPI{
 		//std::set<BWAPI::Unit*> allyUnits;
 		//std::set<BWAPI::Unit*> enemyUnits;
 		std::string configFile;
+		std::string NNType;
 
 		
 	};

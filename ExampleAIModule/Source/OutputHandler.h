@@ -8,7 +8,7 @@ namespace BWAPI{
 class OutputHandler
 {
 public:
-	OutputHandler::OutputHandler(double outputArray[], int outputSize, std::vector<Unit*> allyUnits, std::vector<Unit*> enemyUnits, BWAPI::Game* game, double initCentralDist);	
+	//OutputHandler::OutputHandler(double outputArray[], int outputSize, std::vector<Unit*> allyUnits, std::vector<Unit*> enemyUnits, BWAPI::Game* game, double initCentralDist);	
 };
 }
 

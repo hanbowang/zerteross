@@ -196,6 +196,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\HandlerFactory.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\innovation.cpp"
 				>
 			</File>
@@ -216,6 +220,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Multi12InHandler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Multi12OutHandler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Multi43InHandler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Multi43OutHandler.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\neat.cpp"
 				>
 			</File>
@@ -233,6 +253,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\organism.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\OuputHandlerFactory.cpp"
 				>
 			</File>
 			<File
@@ -274,6 +298,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\HandlerFactory.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\innovation.h"
 				>
 			</File>
@@ -291,6 +319,22 @@
 			</File>
 			<File
 				RelativePath=".\Source\Logfile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Multi12InHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Multi12OutHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Multi43InHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Multi43OutHandler.h"
 				>
 			</File>
 			<File

@@ -8,20 +8,18 @@ namespace BWAPI{
 class InputHandler
 {
 public:
-	InputHandler(std::set<BWAPI::Unit*> allyUnits, std::set<BWAPI::Unit*> enemyUnits);
+	//InputHandler(std::set<BWAPI::Unit*> allyUnits, std::set<BWAPI::Unit*> enemyUnits);
 	Unit* getEnemyUnit(int index);
 	std::vector<Unit*> getEnemyUnits();
 	std::vector<Unit*> getAllyUnits();
-	enum InputType{
+	virtual double* getInputArray() = 0;
+	double getInitCentralDist();
+	/*enum InputType{
 		BIAS,
 		ALLY_HP
-	};
+	};*/
 	
-	double* getInputArray();
-	double getInitCentralDist();
-	
-
-private:
+protected:
 	
 	int _allyNum;
 	int _enemyNum;
