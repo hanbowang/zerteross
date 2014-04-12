@@ -134,14 +134,14 @@ namespace BWAPI{
 		double* inputArray = inputHandler->getInputArray();
 		net->load_sensors(inputArray);
 
-		if(Broodwar->getFrameCount() == 10){
-			std::ofstream ofile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\input.txt");
-			//std::ofstream ofile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\input.txt");
-			for(int i = 0; i < 12; i++){
-				ofile << inputArray[i] << std::endl;
-			}
-			ofile.close();
-		}
+		//if(Broodwar->getFrameCount() == 10){
+		//	//std::ofstream ofile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\input.txt");
+		//	//std::ofstream ofile("F:\\Games\\StarCraft00\\bwapi-data\\AI\\input.txt");
+		//	for(int i = 0; i < 12; i++){
+		//		ofile << inputArray[i] << std::endl;
+		//	}
+		//	ofile.close();
+		//}
 
 
 		int net_depth = net->max_depth();
