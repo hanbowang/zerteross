@@ -246,7 +246,13 @@ namespace BWAPI{
 				WritePrivateProfileString("nncontroller", "curround", ss.str().c_str(), configFile.c_str());
 				ss.clear();
 			}
+		} else {
+			std::ofstream oFile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\combatvsrs.txt", std::ofstream::app);
+			oFile << allyHP << ", " << enemyHP << std::endl;
+			oFile.close();
 		}
+
+
 		
 		// delete input object
 		//delete input;
