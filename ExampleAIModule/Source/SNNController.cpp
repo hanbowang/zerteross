@@ -137,45 +137,45 @@ namespace BWAPI{
 
 	}
 
-	double* SNNController::getInputArray(BWAPI::Unit* unit, std::vector<Unit*> *binVecs[]){
-		// construct inputarray, assign bias and self hp
-		double* inputArray = new double[38];
-		inputArray[BIAS] = 1.0;
-		inputArray[SELF_HP] = (double)unit->getHitPoints() / unit->getType().maxHitPoints();
+	//double* SNNController::getInputArray(BWAPI::Unit* unit, std::vector<Unit*>* binVecs[]){
+	//	// construct inputarray, assign bias and self hp
+	//	double* inputArray = new double[38];
+	//	inputArray[BIAS] = 1.0;
+	//	inputArray[SELF_HP] = (double)unit->getHitPoints() / unit->getType().maxHitPoints();
 
-		
+	//	
 
-		// for each bin, calculate attributes and assign them to the inputarray
-		for (int i = 0; i < 18; ++i)
-		{
-			double binDPF = 0;	// current DPF sum of the bin
-			double binDPFvsUnit = 0;	// the DPF sum if all the enemy units in the bin focus on this unit
-			int binHP = 0;
-			int sHP = 0;	// HP sum of small unit in the bin
-			int mHP = 0;	// HP sum of medium unit in the bin
-			int lHP = 0;	// HP sum of large unit in the bin
-			for (int j = 0; j < binVecs[i]->size(); ++j)
-			{
-				if(binVecs[i][j]->exists()){
-					binDPF += getDPF(binVecs[i][j], binVecs[i][j]->getTarget());
-					binDPFvsUnit += getDPF(binVecs[i][j], unit);
-					std::string size = binVecs[i][j]->getType().size().getName();
-					int unitHP = binVecs[i][j]->getHitPoints();
-					binHP += unitHP;
-					if(size == "Small"){
-						sHP += unitHP;
-					} else if(size == "Medium"){
-						mHP += unitHP;
-					} else {
-						lHP += unitHP;
-					}
-				}
-			}
-			inputArray[BIN_ATTR + i * 2] = DPFdRate(unit, binDPF, binHP, sHP, mHP, lHP);
-			inputArray[BIN_ATTR + i * 2 + 1] = binDPF / unit->getType().maxHitPoints();
-		}
-		return inputArray;
-	}
+	//	// for each bin, calculate attributes and assign them to the inputarray
+	//	for (int i = 0; i < 18; ++i)
+	//	{
+	//		double binDPF = 0;	// current DPF sum of the bin
+	//		double binDPFvsUnit = 0;	// the DPF sum if all the enemy units in the bin focus on this unit
+	//		int binHP = 0;
+	//		int sHP = 0;	// HP sum of small unit in the bin
+	//		int mHP = 0;	// HP sum of medium unit in the bin
+	//		int lHP = 0;	// HP sum of large unit in the bin
+	//		for (int j = 0; j < binVecs[i]->size(); ++j)
+	//		{
+	//			if(binVecs[i][j]->exists()){
+	//				binDPF += getDPF(binVecs[i][j], binVecs[i][j]->getTarget());
+	//				binDPFvsUnit += getDPF(binVecs[i][j], unit);
+	//				std::string size = binVecs[i][j]->getType().size().getName();
+	//				int unitHP = binVecs[i][j]->getHitPoints();
+	//				binHP += unitHP;
+	//				if(size == "Small"){
+	//					sHP += unitHP;
+	//				} else if(size == "Medium"){
+	//					mHP += unitHP;
+	//				} else {
+	//					lHP += unitHP;
+	//				}
+	//			}
+	//		}
+	//		inputArray[BIN_ATTR + i * 2] = DPFdRate(unit, binDPF, binHP, sHP, mHP, lHP);
+	//		inputArray[BIN_ATTR + i * 2 + 1] = binDPF / unit->getType().maxHitPoints();
+	//	}
+	//	return inputArray;
+	//}
 
 	double SNNController::DPFdRate(BWAPI::Unit* unit, double binDPF, int binHP, int sHP, int mHP, int lHP){
 		/* calculate the DPF decreasing rate of the specified bin */
@@ -183,10 +183,10 @@ namespace BWAPI{
 		double sFactor = (double)sHP / binHP;
 		double mFactor = (double)mHP / binHP;
 		double lFactor = (double)lHP / binHP;
-		double unitDPF = (double)unit->getType().groundWeapen().damageAmount() / unit->getType().groundWeapen().damageCooldown();
-		if(unit->getType().groundWeapen().damageType().getName() == "Explosive"){
+		double unitDPF = (double)unit->getType().groundWeapon().damageAmount() / unit->getType().groundWeapon().damageCooldown();
+		if(unit->getType().groundWeapon().damageType().getName() == "Explosive"){
 			attFactor = sFactor * 0.5 + mFactor * 0.75 + lFactor * 1;
-		} else if(unit->getType().groundWeapen().damageType().getName() == "Concussive"){
+		} else if(unit->getType().groundWeapon().damageType().getName() == "Concussive"){
 			attFactor = sFactor * 1 + mFactor * 0.5 + lFactor * 0.25;
 		}
 		return binDPF * unitDPF * attFactor / binHP;
@@ -195,20 +195,20 @@ namespace BWAPI{
 	double SNNController::getDPF(BWAPI::Unit* unit, BWAPI::Unit* target){
 		if(target->exists()){
 			double attFactor = 1;
-			if(unit->getType().groundWeapen().damageType().getName() == "Explosive"){
+			if(unit->getType().groundWeapon().damageType().getName() == "Explosive"){
 				if(target->getType().size().getName() == "Medium"){
 					attFactor = 0.75;
 				} else if(target->getType().size().getName() == "Small"){
 					attFactor = 0.5;
 				}
-			} else if(unit->getType().groundWeapen().damageType().getName() == "Concussive"){
+			} else if(unit->getType().groundWeapon().damageType().getName() == "Concussive"){
 				if(target->getType().size().getName() == "Large"){
 					attFactor = 0.25;
 				} else if(target->getType().size().getName() == "Medium"){
 					attFactor = 0.5;
 				}
 			}
-			return attFactor * unit->getType().groundWeapen().damageAmount() / unit->getType().groundWeapen().damageCooldown();
+			return attFactor * unit->getType().groundWeapon().damageAmount() / unit->getType().groundWeapon().damageCooldown();
 		} else {
 			return 0;
 		}
@@ -259,13 +259,13 @@ namespace BWAPI{
 				}
 				if(angle <= 0.167){
 					angleIndex = 0;
-				} else (angle <= 0.333){
+				} else if(angle <= 0.333){
 					angleIndex = 1;
-				} else (angle <= 0.5){
+				} else if(angle <= 0.5){
 					angleIndex = 2;
-				} else (angle <= 0.667){
+				} else if(angle <= 0.667){
 					angleIndex = 3;
-				} else (angle <= 0.833){
+				} else if(angle <= 0.833){
 					angleIndex = 4;
 				} else {
 					angleIndex = 5;
@@ -277,7 +277,46 @@ namespace BWAPI{
 
 		//double* inputArray = input->getInputArray();
 		// double* inputArray = inputHandler->getInputArray();
-		double* inputArray = getInputArray(unit, binVecs);
+		// double* inputArray = getInputArray(unit, binVecs);
+		// get inputArray
+		// construct inputarray, assign bias and self hp
+		double* inputArray = new double[38];
+		inputArray[BIAS] = 1.0;
+		inputArray[SELF_HP] = (double)unit->getHitPoints() / unit->getType().maxHitPoints();
+
+		
+
+		// for each bin, calculate attributes and assign them to the inputarray
+		for (int i = 0; i < 18; ++i)
+		{
+			double binDPF = 0;	// current DPF sum of the bin
+			double binDPFvsUnit = 0;	// the DPF sum if all the enemy units in the bin focus on this unit
+			int binHP = 0;
+			int sHP = 0;	// HP sum of small unit in the bin
+			int mHP = 0;	// HP sum of medium unit in the bin
+			int lHP = 0;	// HP sum of large unit in the bin
+			for (int j = 0; j < binVecs[i]->size(); ++j)
+			{
+				if((*binVecs[i])[j]->exists()){
+					binDPF += getDPF((*binVecs[i])[j], (*binVecs[i])[j]->getTarget());
+					binDPFvsUnit += getDPF((*binVecs[i])[j], unit);
+					std::string size = (*binVecs[i])[j]->getType().size().getName();
+					int unitHP = (*binVecs[i])[j]->getHitPoints();
+					binHP += unitHP;
+					if(size == "Small"){
+						sHP += unitHP;
+					} else if(size == "Medium"){
+						mHP += unitHP;
+					} else {
+						lHP += unitHP;
+					}
+				}
+			}
+			inputArray[BIN_ATTR + i * 2] = DPFdRate(unit, binDPF, binHP, sHP, mHP, lHP);
+			inputArray[BIN_ATTR + i * 2 + 1] = binDPF / unit->getType().maxHitPoints();
+		}
+
+		// load the input to nn
 		net->load_sensors(inputArray);
 
 		//if(Broodwar->getFrameCount() == 10){
@@ -338,8 +377,8 @@ namespace BWAPI{
 		double moveScore = outputArray[1];
 		if(attScore >= moveScore){
 			// find a target enemy unit with lowest HP
-			std::string dmType = unit->getType().groundWeapen().damageType().getName();
-			BWAPI::Unit* target = binVecs[targetIndex][0];
+			std::string dmType = unit->getType().groundWeapon().damageType().getName();
+			BWAPI::Unit* target = (*binVecs[targetIndex])[0];
 			int minHP = 1000;
 			for (std::vector<BWAPI::Unit*>::const_iterator i = binVecs[targetIndex]->begin(); i != binVecs[targetIndex]->end(); i++)
 			{
@@ -372,8 +411,8 @@ namespace BWAPI{
 		// factory = NULL;
 		delete inputArray;
 		inputArray = NULL;
-		delete outputHandler;
-		outputHandler = NULL;
+		/*delete outputHandler;
+		outputHandler = NULL;*/
 		delete outputArray;
 		outputArray = NULL;
 		//Broodwar->sendText("The target is: %d", targetIndex);

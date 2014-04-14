@@ -17,7 +17,7 @@ namespace BWAPI{
 	{
 	public:
 		//NNController(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer, std::string filename);
-		NNController(BWAPI::Player* selfPlayer, std::string filename);
+		//NNController(BWAPI::Player* selfPlayer, std::string filename);
 		//void initEnemy(BWAPI::Player* enemyPlayer);
 		virtual void initUnits(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer);
 		virtual void takeAction();

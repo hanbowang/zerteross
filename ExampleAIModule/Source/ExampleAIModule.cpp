@@ -48,7 +48,7 @@ void ExampleAIModule::onStart()
 	std::string configFilePath = "E:\\Games\\StarCraft00\\bwapi-data\\AI\\nncontroller_config.ini";
 	// std::string configFilePath = "C:\\Program Files\\StarCraft\\bwapi-data\\AI\\nncontroller_config.ini";
 	//controller = new BWAPI::NNController(Broodwar->self(), Broodwar->enemy(), configFilePath.c_str());
-	std::char pResult[255];
+	char pResult[255];
 	GetPrivateProfileString("nncontroller",  "NNType", "", pResult, 255, configFilePath.c_str());
 	std::string NNType = pResult;
 	if(NNType == "multi12" || NNType == "multi43"){

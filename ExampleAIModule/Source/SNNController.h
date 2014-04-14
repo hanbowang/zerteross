@@ -51,7 +51,7 @@ namespace BWAPI{
 		
 		void controlUnit(BWAPI::Unit* unit);
 		double* getInputArray(BWAPI::Unit* unit, std::vector<Unit*> *binVecs[]);
-		double getDPF(BWAPI::Unit* unit);
+		double getDPF(BWAPI::Unit* unit, BWAPI::Unit* target);
 		double DPFdRate(BWAPI::Unit* unit, double binDPF, int binHP, int sHP, int mHP, int lHP);
 		double SNNController::getAngle(BWAPI::Unit* a, BWAPI::Unit* b);
 		double SNNController::moveRadius(BWAPI::Unit* unit, int sec);

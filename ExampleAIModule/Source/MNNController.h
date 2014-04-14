@@ -14,7 +14,7 @@
 
 namespace BWAPI{
 	//class Input;
-	class MNNController : pulic NNController
+	class MNNController : public NNController
 	{
 	public:
 		//NNController(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer, std::string filename);

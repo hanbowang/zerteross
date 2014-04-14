@@ -220,6 +220,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\MNNController.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Multi12InHandler.cpp"
 				>
 			</File>
@@ -265,6 +269,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\population.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\SNNController.cpp"
 				>
 			</File>
 			<File
@@ -322,6 +330,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\MNNController.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Multi12InHandler.h"
 				>
 			</File>
@@ -363,6 +375,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\population.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\SNNController.h"
 				>
 			</File>
 			<File
