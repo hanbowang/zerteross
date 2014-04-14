@@ -6,6 +6,9 @@
 #include "Input.h"
 //#include "Logfile.h"
 #include "NNController.h"
+#include "SNNController.h"
+#include "MNNController.h"
+#include <Windows.h>
 
 using namespace BWAPI;
 using namespace std;
@@ -29,7 +32,7 @@ void ExampleAIModule::onStart()
 	//Broodwar->enableFlag(Flag::UserInput);
 	// Uncomment to enable complete map information
 	Broodwar->enableFlag(Flag::CompleteMapInformation);
-	Broodwar->setLocalSpeed(0);
+	//Broodwar->setLocalSpeed(0);
 	//Broodwar->setFrameSkip(5);
 	//Broodwar->setGUI(false);
 
@@ -43,9 +46,17 @@ void ExampleAIModule::onStart()
 
 	// Initialize the neural network controller
 	std::string configFilePath = "E:\\Games\\StarCraft00\\bwapi-data\\AI\\nncontroller_config.ini";
-	//std::string configFilePath = "C:\\Program Files\\StarCraft\\bwapi-data\\AI\\nncontroller_config.ini";
+	// std::string configFilePath = "C:\\Program Files\\StarCraft\\bwapi-data\\AI\\nncontroller_config.ini";
 	//controller = new BWAPI::NNController(Broodwar->self(), Broodwar->enemy(), configFilePath.c_str());
-	controller = new BWAPI::NNController(Broodwar->self(), configFilePath.c_str());
+	std::char pResult[255];
+	GetPrivateProfileString("nncontroller",  "NNType", "", pResult, 255, configFilePath.c_str());
+	std::string NNType = pResult;
+	if(NNType == "multi12" || NNType == "multi43"){
+		controller = new BWAPI::MNNController(Broodwar->self(), configFilePath.c_str());
+	} else {
+		controller = new BWAPI::SNNController(Broodwar->self(), configFilePath.c_str());
+	}
+	
 }
 
 void ExampleAIModule::onEnd(bool isWinner)
@@ -107,6 +118,32 @@ void ExampleAIModule::onFrame()
 	if(Broodwar->getFrameCount() == 1){
 		//controller->initEnemy(Broodwar->enemy());
 		controller->initUnits(Broodwar->self(), Broodwar->enemy());
+
+		// test// get the initial center distance between ally units and enemy units
+		double _ally_center_x = 0;
+		double _ally_center_y = 0;
+		double _enemy_center_x = 0;
+		double _enemy_center_y = 0;
+		
+		for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
+				_ally_center_x = (*i)->getPosition().x();
+			_ally_center_y = (*i)->getPosition().y();
+			}
+
+		for(std::set<Unit*>::const_iterator i=Broodwar->enemy()->getUnits().begin();i!=Broodwar->enemy()->getUnits().end();i++){
+				_enemy_center_x = (*i)->getPosition().x();
+			_enemy_center_y = (*i)->getPosition().y();
+			}
+		/*double _init_central_dist = sqrt(pow((_ally_center_x / Broodwar->self()->getUnits().size() - _enemy_center_x / Broodwar->enemy()->getUnits().size()), 2.0) + 
+			pow((_ally_center_y / Broodwar->self()->getUnits().size() - _enemy_center_y / Broodwar->enemy()->getUnits().size()), 2.0));*/
+		_ally_center_x -= _enemy_center_x;
+		_ally_center_y -= _enemy_center_y;
+		std::ofstream oFile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\initD.txt");
+		oFile << _ally_center_x << " " << _ally_center_y << std::endl;
+		oFile.close();
+
+
+		////////
 	}
 	// give order to units every specified interval
 	if(Broodwar->getFrameCount() % 10 == 0 && Broodwar->getFrameCount() > 0){

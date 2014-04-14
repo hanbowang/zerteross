@@ -19,12 +19,12 @@ namespace BWAPI{
 		//NNController(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer, std::string filename);
 		NNController(BWAPI::Player* selfPlayer, std::string filename);
 		//void initEnemy(BWAPI::Player* enemyPlayer);
-		void initUnits(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer);
-		void takeAction();
-		void log(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer);
+		virtual void initUnits(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer);
+		virtual void takeAction();
+		virtual void log(BWAPI::Player* selfPlayer, BWAPI::Player* enemyPlayer);
 		
 
-	private:
+	protected:
 		std::string popFileName;
 		std::string resultFileName;
 		int curgen;
