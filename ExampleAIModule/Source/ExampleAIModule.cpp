@@ -32,7 +32,7 @@ void ExampleAIModule::onStart()
 	//Broodwar->enableFlag(Flag::UserInput);
 	// Uncomment to enable complete map information
 	Broodwar->enableFlag(Flag::CompleteMapInformation);
-	//Broodwar->setLocalSpeed(0);
+	Broodwar->setLocalSpeed(0);
 	//Broodwar->setFrameSkip(5);
 	//Broodwar->setGUI(false);
 
@@ -119,28 +119,28 @@ void ExampleAIModule::onFrame()
 		//controller->initEnemy(Broodwar->enemy());
 		controller->initUnits(Broodwar->self(), Broodwar->enemy());
 
-		// test// get the initial center distance between ally units and enemy units
-		double _ally_center_x = 0;
-		double _ally_center_y = 0;
-		double _enemy_center_x = 0;
-		double _enemy_center_y = 0;
-		
-		for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
-				_ally_center_x = (*i)->getPosition().x();
-			_ally_center_y = (*i)->getPosition().y();
-			}
+		//// test// get the initial center distance between ally units and enemy units
+		//double _ally_center_x = 0;
+		//double _ally_center_y = 0;
+		//double _enemy_center_x = 0;
+		//double _enemy_center_y = 0;
+		//
+		//for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++){
+		//		_ally_center_x = (*i)->getPosition().x();
+		//	_ally_center_y = (*i)->getPosition().y();
+		//	}
 
-		for(std::set<Unit*>::const_iterator i=Broodwar->enemy()->getUnits().begin();i!=Broodwar->enemy()->getUnits().end();i++){
-				_enemy_center_x = (*i)->getPosition().x();
-			_enemy_center_y = (*i)->getPosition().y();
-			}
-		/*double _init_central_dist = sqrt(pow((_ally_center_x / Broodwar->self()->getUnits().size() - _enemy_center_x / Broodwar->enemy()->getUnits().size()), 2.0) + 
-			pow((_ally_center_y / Broodwar->self()->getUnits().size() - _enemy_center_y / Broodwar->enemy()->getUnits().size()), 2.0));*/
-		_ally_center_x -= _enemy_center_x;
-		_ally_center_y -= _enemy_center_y;
-		std::ofstream oFile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\initD.txt");
-		oFile << _ally_center_x << " " << _ally_center_y << std::endl;
-		oFile.close();
+		//for(std::set<Unit*>::const_iterator i=Broodwar->enemy()->getUnits().begin();i!=Broodwar->enemy()->getUnits().end();i++){
+		//		_enemy_center_x = (*i)->getPosition().x();
+		//	_enemy_center_y = (*i)->getPosition().y();
+		//	}
+		///*double _init_central_dist = sqrt(pow((_ally_center_x / Broodwar->self()->getUnits().size() - _enemy_center_x / Broodwar->enemy()->getUnits().size()), 2.0) + 
+		//	pow((_ally_center_y / Broodwar->self()->getUnits().size() - _enemy_center_y / Broodwar->enemy()->getUnits().size()), 2.0));*/
+		//_ally_center_x -= _enemy_center_x;
+		//_ally_center_y -= _enemy_center_y;
+		//std::ofstream oFile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\initD.txt");
+		//oFile << _ally_center_x << " " << _ally_center_y << std::endl;
+		//oFile.close();
 
 
 		////////

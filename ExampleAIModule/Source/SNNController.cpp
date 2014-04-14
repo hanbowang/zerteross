@@ -193,7 +193,7 @@ namespace BWAPI{
 	}
 
 	double SNNController::getDPF(BWAPI::Unit* unit, BWAPI::Unit* target){
-		if(target->exists()){
+		if(target != NULL && target->exists()){
 			double attFactor = 1;
 			if(unit->getType().groundWeapon().damageType().getName() == "Explosive"){
 				if(target->getType().size().getName() == "Medium"){
@@ -510,8 +510,8 @@ namespace BWAPI{
 		// delete input object
 		//delete input;
 		//input = NULL;
-		delete inputHandler;
-		inputHandler = NULL;
+		/*delete inputHandler;
+		inputHandler = NULL;*/
 		
 
 		// delete pop object
