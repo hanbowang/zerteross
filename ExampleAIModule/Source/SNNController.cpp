@@ -428,7 +428,7 @@ namespace BWAPI{
 			}
 		}*/
 
-		Broodwar->sendText("=============================");
+		//Broodwar->sendText("=============================");
 	}
 
 	// void SNNController::translateOutput(double ouputArray[], BWAPI::Unit* unit){
@@ -500,7 +500,7 @@ namespace BWAPI{
 				ss.clear();
 			}
 		} else {
-			std::ofstream oFile("C:\\Program Files\\StarCraft\\bwapi-data\\AI\\combatvsrs.txt", std::ofstream::app);
+			std::ofstream oFile("E:\\Games\\StarCraft00\\bwapi-data\\AI\\combatvsrs.txt", std::ofstream::app);
 			oFile << allyHP << ", " << enemyHP << std::endl;
 			oFile.close();
 		}
